@@ -22,6 +22,45 @@ function pruneChecklistData(year, month) {
     }
 }
 
+async function loadChecklistBetween(startDate, endDate) {
+    const promises = [];
+    const cursor = new Date(startDate);
+
+    while (cursor <= endDate) {
+        const yyyy = cursor.getFullYear();
+        const mm = String(cursor.getMonth() + 1).padStart(2, '0');
+        const dd = String(cursor.getDate()).padStart(2, '0');
+        const dateStr = `${yyyy}-${mm}-${dd}`;
+
+        if (checklistData[dateStr]) {
+            cursor.setDate(cursor.getDate() + 1);
+            continue; // 이미 로드된 날짜는 skip
+        }
+
+        promises.push(
+            axios.post('/api/dashboard/checklist/items', { memberId, checkDate: dateStr })
+                .then(res => {
+                    checklistData[dateStr] = res.data.map(item => ({
+                        checkId: item.checkId,
+                        checklistId: item.checklistId,
+                        text: item.checkContent,
+                        completed: item.isCheck === 1
+                    }));
+                    if (res.data.length > 0) {
+                        checklistIdMap[dateStr] = res.data[0].checklistId;
+                    }
+                })
+                .catch(() => {
+                    delete checklistData[dateStr];
+                })
+        );
+
+        cursor.setDate(cursor.getDate() + 1);
+    }
+
+    await Promise.all(promises);
+}
+
 // 해당 연-월의 체크리스트 데이터를 서버에서 불러와 checklistData에 저장
 async function loadMonthlyChecklist(year, month) {
     const daysInMonth = new Date(year, month, 0).getDate();
@@ -41,7 +80,9 @@ async function loadMonthlyChecklist(year, month) {
                         checklistIdMap[date] = res.data[0].checklistId; // ✅ 이 줄 추가
                     }
                 })
-                .catch(() => checklistData[date] = [])
+                .catch(() => {
+                    delete checklistData[date]; // <- 아예 제거하도록 수정
+                })
         );
     }
     await Promise.all(promises);
@@ -110,17 +151,27 @@ async function onCheckboxChange(e) {
 // 패널 닫기
 document.getElementById('close-panel-btn').addEventListener('click', async () => {
     document.getElementById('check-panel').style.display = 'none';
+
+    // 체크 항목이 없고 checklistId가 있을 경우만 삭제
     if (checklistList.length === 0 && currentChecklistId) {
-        await axios.delete('/api/dashboard/checklist', {
-            data: {
-                memberId,
-                checkDate: currentSelectedDate,
-                checklistId: currentChecklistId
-            }
-        });
-        delete checklistData[currentSelectedDate];
-        calendar.refetchEvents();
+        try {
+            await axios.delete('/api/dashboard/checklist', {
+                data: { checklistId: currentChecklistId }  // ✅ 객체로 감싸서 보냄
+            });
+
+            // 프론트에서 데이터 제거
+            delete checklistData[currentSelectedDate];
+            delete checklistIdMap[currentSelectedDate];
+
+            // 달력 리렌더링
+            calendar.refetchEvents();
+        } catch (err) {
+            console.error('체크리스트 삭제 실패:', err);
+            alert('체크리스트 삭제 중 오류가 발생했습니다.');
+        }
     }
+
+    // 상태 초기화
     currentSelectedDate = null;
     currentChecklistId = null;
 });
@@ -273,10 +324,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         headerToolbar: {left: 'prev,next today', center: 'title', right: ''}, buttonText: {today: '오늘'},
         eventDisplay: 'block',
         events: async (fetchInfo, success) => {
-            const year = fetchInfo.start.getFullYear();
-            const month = fetchInfo.start.getMonth() + 1;
-            pruneChecklistData(year, month);
-            await loadMonthlyChecklist(year, month);
+            const start = new Date(fetchInfo.start);
+            const end = new Date(fetchInfo.end);
+            console.log('[FullCalendar] fetch 범위:', start.toISOString(), '~', end.toISOString());
+
+            await loadChecklistBetween(start, end);
             success(buildCalendarEvents());
         },
         eventContent: info => {

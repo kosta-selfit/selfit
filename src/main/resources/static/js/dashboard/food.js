@@ -1,34 +1,34 @@
-// -----------------------------
-// food.js (실제 백엔드 연동 버전)
-// -----------------------------
+// food.js (백엔드 연동 통합 버전, 수정판)
 
+// -----------------------------
 // Axios 기본 설정
+// -----------------------------
 axios.defaults.headers.common['Content-Type'] = 'application/json';
+axios.defaults.withCredentials = true;
 
-// 로그인된 회원 ID (예시: 테스트용 고정)
-
-
+// -----------------------------
+// 전역 변수 선언
+// -----------------------------
 let calendar;
 let selectedDate = null;
+let foodMap = {};      // { "YYYY-MM-DD": [ { foodInfoId, foodName, amount, cal }, ... ] }
+let foodList = [];     // 현재 패널에 보여줄, 선택된 날짜의 음식 목록
+let itemToDelete = null;
+let editIndex = null;
 
-// { "YYYY-MM-DD": [ { foodInfoId, foodName, amount, cal }, ... ] }
-let foodMap = {};
-let foodList = [];    // 현재 선택된 날짜의 음식 목록
-let itemToDelete = null;  // 삭제 대상 인덱스
+// 날짜별 생성된 foodNoteId 저장
+const foodNoteIdByDate = {}; // { "2025-06-03": 123, ... }
+const memberId = window.memberId; // (서버에서 주입되었다고 가정)
 
-// (추가) 날짜별로 서버에서 받아온 foodNoteId를 저장
-// 실제로는 "날짜 클릭 시"마다 서버에게 요청해서 얻어야 하지만, 여기서는 예시로 객체에 담아둡니다.
-const foodNoteIdByDate = {}; // ex: { "2025-05-20": 42, ... }
+// 음식명, 수량, 단위, 자동완성 리스트 엘리먼트 참조
+const nameInput = document.getElementById('food-name');
+const amountInput = document.getElementById('food-amount');
+const unitEl = document.getElementById('food-unit');
+const listEl = document.getElementById('autocomplete-list');
 
 // =======================================
 // 1) ApexCharts를 이용한 “식단 그래프” 초기화
 // =======================================
-// Axios 기본 설정
-axios.defaults.headers.common['Content-Type'] = 'application/json';
-axios.defaults.withCredentials = true;
-
-const memberId = window.memberId;
-
 (function () {
     function setupYearDropdown() {
         const currentYear = new Date().getFullYear();
@@ -63,18 +63,15 @@ const memberId = window.memberId;
     }
 
     function fetchYearlyIntake(year) {
-        return axios.post('/api/dashboard/food/kcal/year', {
-            intakeYear: year
-        })
+        return axios.post('/api/dashboard/food/kcal/year', { intakeYear: year })
             .then(res => {
                 const rawList = res.data || [];
                 return rawList.map(item => {
+                    // item.intakeDate는 "2025-06-03" 같은 문자열
                     const date = new Date(item.intakeDate + 'T00:00:00');
-                    date.setDate(date.getDate() + 1); // 날짜 밀림 보정
-                    return {
-                        x: date,
-                        y: item.intakeSum
-                    };
+                    // (필요하면 보정)
+                    date.setDate(date.getDate() + 1);
+                    return { x: date, y: item.intakeSum };
                 });
             });
     }
@@ -142,7 +139,7 @@ const memberId = window.memberId;
             fill: { type: 'solid', colors: ['#33C181'] },
             markers: { size: 0, hover: { size: 6 } },
             grid: { borderColor: '#eee', strokeDashArray: 4 },
-            title: { text: '운동 그래프', align: 'left', style: { fontSize: '18px', color: '#666' } }
+            title: { text: '섭취 그래프', align: 'left', style: { fontSize: '18px', color: '#666' } }
         };
 
         if (window.foodChartInstance) {
@@ -187,27 +184,10 @@ const memberId = window.memberId;
     }
 })();
 
+
 // =======================================
 // 2) FullCalendar + 패널(음식 입력)을 “서버 연동” 형태로 수정
 // =======================================
-function renderKcalEvents(calendar) {
-    // calendar에 이벤트(“총 XX kcal”)를 그려 줌
-    const events = [];
-    for (const date in foodMap) {
-        const list = foodMap[date];
-        const totalKcal = list.reduce((sum, item) => sum + item.cal, 0);
-        if (totalKcal > 0) {
-            events.push({
-                title: `총 ${totalKcal} kcal`,
-                start: date,
-                allDay: true
-            });
-        }
-    }
-    calendar.removeAllEvents();
-    calendar.addEventSource(events);
-}
-
 document.addEventListener('DOMContentLoaded', function () {
     const calendarEl = document.getElementById('calendar');
     if (!calendarEl) return;
@@ -218,49 +198,55 @@ document.addEventListener('DOMContentLoaded', function () {
         height: 650,
         headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
         buttonText: { today: '오늘' },
-        // 날짜 클릭 시 → 해당 날짜 패널 열고, 서버에서 식단 목록을 가져와서 화면에 뿌리기
+
+        // ────────────────────────────────────────────────────
+        // 1) eventSources 콜백: 로드 시 한 달 치 총 kcal을 불러와서 달력에 표시
+        // ────────────────────────────────────────────────────
+        eventSources: [
+            function (fetchInfo, successCallback, failureCallback) {
+                const startDate = new Date(fetchInfo.start);
+                const endDate = new Date(fetchInfo.end);
+                const requests = [];
+                let cursor = new Date(startDate);
+
+                while (cursor < endDate) {
+                    const dateStr = cursor.toISOString().split('T')[0];
+                    const req = axios
+                        .post('/api/dashboard/food/kcal', { intakeDate: dateStr })
+                        .then(res => {
+                            const sumKcal = res.data.intakeSum || 0;
+                            if (sumKcal <= 0) {
+                                return null;
+                            }
+                            return {
+                                title: `총 ${sumKcal} kcal`,
+                                start: dateStr,
+                                allDay: true
+                            };
+                        })
+                        .catch(() => null);
+
+                    requests.push(req);
+                    cursor.setDate(cursor.getDate() + 1);
+                }
+
+                Promise.all(requests)
+                    .then(results => successCallback(results.filter(evt => evt !== null)))
+                    .catch(err => failureCallback(err));
+            }
+        ],
+
+        // ────────────────────────────────────────────────────
+        // 2) 날짜 클릭 시 → 패널 열고, 해당 날짜 데이터만 불러와서 부분 업데이트
+        // ────────────────────────────────────────────────────
         dateClick: async function (info) {
-            selectedDate = info.dateStr; // ex) "2025-05-20"
+            // (1) 클릭한 날짜 저장 + UI 초기화(패널 목록만 비우기)
+            selectedDate = info.dateStr;
+            foodList = [];
+            renderFoodList(); // 패널 UI에 남아 있던 이전 목록 제거
+
+            // (2) 패널 열기 & “등록 모드” 세팅
             const formatted = selectedDate.replace(/-/g, '.');
-
-            // -------------------------
-            // 1) (추가) foodNoteId 조회
-            //    → 실제 프로젝트에서는 이 부분을 API 호출로 대체하세요.
-            //      예: const noteRes = await axios.post('/api/dashboard/foodNote', { memberId, checkDate: selectedDate });
-            //          foodNoteIdByDate[selectedDate] = noteRes.data.foodNoteId;
-            //    여기서는 예시로 하드코딩(=1) 처리합니다.
-            // -------------------------
-            if (!foodNoteIdByDate[selectedDate]) {
-                foodNoteIdByDate[selectedDate] = 1; // 임시값. 실제로는 서버에서 받아온 ID를 넣어야 합니다.
-            }
-
-            // -------------------------
-            // 2) 서버에서 해당 날짜의 음식 목록 조회
-            // -------------------------
-            try {
-                const resp = await axios.post('/api/dashboard/foods', {
-                    memberId: memberId,
-                    intakeDate: selectedDate
-                });
-                // resp.data 예시:
-                //   [
-                //     { foodInfoId:123, foodName:"등심 돈까스", intake:200, unitKcal:500, intakeKcal:1000, unit:"g" },
-                //     ...
-                //   ]
-                foodList = resp.data.map(f => ({
-                    foodInfoId: f.foodInfoId,
-                    foodName:   f.foodName,
-                    amount:     `${f.intake}${f.unit}`,   // ex) “200g”
-                    cal:        f.intakeKcal             // ex) 총 “1000 kcal”
-                }));
-                foodMap[selectedDate] = foodList;
-            } catch (err) {
-                console.error("서버에서 해당 날짜 식단 목록 로드 실패:", err);
-                foodList = [];
-                foodMap[selectedDate] = [];
-            }
-
-            // 3) 패널을 화면에 표시
             const panel = document.getElementById('food-panel');
             const dateEl = document.getElementById('panel-date');
             if (panel && dateEl) {
@@ -268,30 +254,95 @@ document.addEventListener('DOMContentLoaded', function () {
                 panel.style.display = 'block';
                 editIndex = null;
                 document.getElementById('add-food-btn').innerText = '등록';
-            }
-            document.getElementById('food-name').value = '';
-            document.getElementById('food-amount').value = '';
-            document.getElementById('food-unit').innerText = '';
-            document.getElementById('autocomplete-list').classList.add('d-none');
 
+                // ★ “등록 모드”이므로 이름 입력 필드를 활성화
+                nameInput.disabled = false;
+            }
+            nameInput.value = '';
+            amountInput.value = '';
+            unitEl.innerText = '';
+            listEl.classList.add('d-none');
+
+            // (3) 식단 노트 생성/조회 (POST /api/dashboard/food/list)
+            try {
+                const noteRes = await axios.post('/api/dashboard/food/list', {
+                    intakeDate: selectedDate
+                });
+                // 새로 생성되면 foodNoteId를 받아서 저장
+                const { foodNoteId } = noteRes.data;
+                foodNoteIdByDate[selectedDate] = foodNoteId;
+            } catch (err) {
+                // 이미 해당 날짜에 노트가 있으면 예외가 발생할 수 있다.
+                // 이 경우에는 “이미 존재”라는 메시지를 무시만 하고 넘어간다.
+                console.warn("식단 노트가 이미 존재합니다(생성 건너뜀):", err.response?.data?.message || err);
+                // foodNoteIdByDate[selectedDate] 값은 이전에 저장된 게 있거나, undefined일 수 있다.
+            }
+
+            // (4) 해당 날짜 식단 목록 조회 (POST /api/dashboard/foods)
+            let totalForClickedDay = 0;
+            try {
+                const resp = await axios.post('/api/dashboard/foods', {
+                    intakeDate: selectedDate
+                });
+                // resp.data는 배열(여러 건)로 내려온다.
+                // 아래 map()으로 “무조건 배열 전체”를 foodList로 변환한다.
+                foodList = resp.data.map(f => ({
+                    foodInfoId: f.foodInfoId,
+                    foodName:   f.foodName,
+                    amount:     `${f.intake}`,
+                    cal:        f.intakeKcal
+                }));
+
+                // foodMap 에도 전체 배열을 저장
+                foodMap[selectedDate] = foodList;
+
+                // 그날 전체 kcal 합산
+                totalForClickedDay = foodList.reduce((sum, item) => sum + item.cal, 0);
+            } catch (err) {
+                console.error("서버에서 해당 날짜 식단 목록 로드 실패:", err);
+                foodList = [];
+                foodMap[selectedDate] = [];
+                totalForClickedDay = 0;
+            }
+
+            // (5) 패널(모달 등) 안의 목록을 렌더
             renderFoodList();
+
+            // (6) 클릭한 날짜 위에 “총 X kcal” 이벤트를 하나만 추가하거나, 이미 있으면 제목만 업데이트
+            const existingEvents = calendar.getEvents().filter(ev => ev.startStr === selectedDate);
+
+            if (totalForClickedDay > 0) {
+                // 총 kcal이 0보다 클 때만 이벤트를 추가/갱신
+                if (existingEvents.length > 0) {
+                    // 이미 이벤트(총 kcal 배지)가 있으면, 제목(title)만 갱신
+                    existingEvents.forEach(ev => ev.setProp('title', `총 ${totalForClickedDay} kcal`));
+                } else {
+                    // 없으면 새로 하나만 추가
+                    calendar.addEvent({
+                        title: `총 ${totalForClickedDay} kcal`,
+                        start: selectedDate,
+                        allDay: true
+                    });
+                }
+            } else {
+                // 총 kcal이 0이나 그 이하면, 기존에 있던 이벤트가 있으면 지우기
+                existingEvents.forEach(ev => ev.remove());
+            }
         },
+
+        // 3) events: [] → eventSources 콜백이 모든 이벤트를 공급하기 때문에 빈 배열로 둠
         events: []
     });
+
     calendar.render();
 });
 
-// ===========================================
-// 3) 자동완성 → “실제 백엔드(openSearch API)” 호출로 변경
-// ===========================================
-const nameInput = document.getElementById('food-name');
-const amountInput = document.getElementById('food-amount');
-const unitEl = document.getElementById('food-unit');
-const listEl = document.getElementById('autocomplete-list');
 
+// ===========================================
+// 3) 자동완성 → “실제 백엔드(openSearch API)” 호출
+// ===========================================
 let selectedIdx = -1;
 
-// 입력할 때마다 백엔드에 검색 요청 보내고, 결과를 드롭다운에 렌더링
 nameInput.addEventListener('input', async function () {
     const keyword = nameInput.value.trim();
     if (!keyword) {
@@ -301,19 +352,18 @@ nameInput.addEventListener('input', async function () {
 
     try {
         const res = await axios.post('/api/dashboard/food/openSearch', {
-            keyword:  keyword,
-            pageNo:   1,     // 필요한 만큼 paging 적용
-            numOfRows: 20
+            keyword: keyword,
+            pageNo:  1,
+            numOfRows: 100
         });
-        const items = res.data; // List<FoodApi> 형태 [{ foodCd, foodNm, enerc, foodSize }, ...]
+        const items = res.data; // List<FoodApi>
         if (!items || items.length === 0) {
             listEl.classList.add('d-none');
             return;
         }
 
-        // `<li>` 태그를 “음식명 + 총중량 + 칼로리” 형태로 생성
         listEl.innerHTML = items.map(f => {
-            // 예:총중량(foodSize) 예: "200g", 칼로리(enerc) 예: "500"
+            // f.foodSize 예: "200g", f.enerc 예: "500"
             return `
                 <li class="autocomplete-item"
                     data-name="${f.foodNm}"
@@ -332,7 +382,6 @@ nameInput.addEventListener('input', async function () {
     }
 });
 
-// 키보드 ↑↓ 및 Enter 네비게이션
 nameInput.addEventListener('keydown', function (e) {
     const items = listEl.querySelectorAll('.autocomplete-item');
     if (items.length === 0) return;
@@ -358,38 +407,36 @@ function updateAutocompleteSelection(items) {
     });
 }
 
-// 자동완성 결과 클릭 시 → input 채우고 드롭다운 닫기
 listEl.addEventListener('click', function (e) {
     const clickedLi = e.target.closest('.autocomplete-item');
     if (!clickedLi) return;
 
-    const name = clickedLi.dataset.name;
+    const name      = clickedLi.dataset.name;
     const amountStr = clickedLi.dataset.amount; // ex) "200g"
-    const calPerUnit = parseInt(clickedLi.dataset.cal, 10); // ex) 500
+    const calPerUnit= parseInt(clickedLi.dataset.cal, 10); // ex) 500
 
     // 숫자와 단위를 분리
     const amountVal = parseInt(amountStr.replace(/[^0-9]/g, ''), 10);
-    const unitText = amountStr.replace(/[0-9]/g, '');
+    const unitText  = amountStr.replace(/[0-9]/g, '');
 
     nameInput.value = name;
     amountInput.value = amountVal;
     unitEl.innerText = unitText;
-    nameInput.dataset.calPerUnit = calPerUnit;
+    nameInput.dataset.calPerUnit = calPerUnit; // 1단위(100g)당 칼로리
 
     listEl.classList.add('d-none');
     selectedIdx = -1;
 });
 
+
 // ===========================================
 // 4) “등록/수정” 버튼 클릭 시 → 서버 호출
 // ===========================================
-let editIndex = null;
-
 document.getElementById('add-food-btn').addEventListener('click', async function () {
-    const name = nameInput.value.trim();
-    const amount = parseInt(amountInput.value, 10);
-    const unit = unitEl.innerText;
-    const calPerUnit = parseInt(nameInput.dataset.calPerUnit || '0', 10);
+    const name      = nameInput.value.trim();
+    const amount    = parseInt(amountInput.value, 10);
+    const unit      = unitEl.innerText; // ex) “g”
+    const calPerUnit= parseInt(nameInput.dataset.calPerUnit || '0', 10);
 
     if (!name) {
         alert("음식명을 입력해주세요.");
@@ -404,62 +451,96 @@ document.getElementById('add-food-btn').addEventListener('click', async function
         return;
     }
 
-    // “기준 칼로리” 계산: (단위당칼로리 / 기준중량) * 입력량
-    // 고정 기준중량은 서버 OpenAPI에서 내려준 foodSize(예: "200g") 에서 가져와야 하지만,
-    // 여기서는 단순히 “(enerc / 100) * 입력량” 형태로 계산한다고 가정합니다.
+    // 기준 칼로리 계산: (enerc/기준중량) * 입력량
+    // 여기서는 “enerc가 100g당 칼로리”라고 가정
     const baseAmount = parseInt((unit || "100g").replace(/[^0-9]/g, ''), 10) || 100;
-    const cal = Math.round((calPerUnit / baseAmount) * amount);
+    const intakeKcal = Math.round((calPerUnit / baseAmount) * amount);
 
-    // ----------------------------
-    // 수정 모드
-    // ----------------------------
+    // (A) 수정 모드
     if (editIndex !== null) {
         const item = foodList[editIndex];
         try {
+            // PUT /api/dashboard/food
             await axios.put('/api/dashboard/food', {
                 foodInfoId: item.foodInfoId,
-                newIntake: amount
+                newIntake:  amount
             });
             // 로컬 상태 반영
-            foodList[editIndex].amount = `${amount}${unit}`;
-            foodList[editIndex].cal = cal;
+            foodList[editIndex].foodName = name;
+            foodList[editIndex].amount   = `${amount}${unit}`;
+            foodList[editIndex].cal      = intakeKcal;
             renderFoodList();
-            renderKcalEvents(calendar);
+
+            // → 수정 후: 해당 날짜 총 kcal 다시 계산 → 이벤트 부분 업데이트
+            const updatedTotal = foodList.reduce((sum, it) => sum + it.cal, 0);
+            const existing = calendar.getEvents().filter(ev => ev.startStr === selectedDate);
+            if (existing.length > 0) {
+                existing.forEach(ev => ev.setProp('title', `총 ${updatedTotal} kcal`));
+            } else {
+                calendar.addEvent({
+                    title: `총 ${updatedTotal} kcal`,
+                    start: selectedDate,
+                    allDay: true
+                });
+            }
         } catch (err) {
             console.error("서버에서 음식 정보 수정 실패:", err);
+            alert("음식 정보 수정에 실패했습니다. 다시 시도해주세요.");
         }
 
+        // 수정 모드 해제 → “등록 모드”로 복귀
         editIndex = null;
         document.getElementById('add-food-btn').innerText = '등록';
         document.querySelectorAll('.food-row').forEach(row => row.classList.remove('editing'));
+
+        // ★ 수정 완료 후 음식명 입력 활성화
+        nameInput.disabled = false;
     }
-        // ----------------------------
-        // 신규 등록 모드
-    // ----------------------------
+    // (B) 신규 등록 모드
     else {
         try {
-            // 실제로는 “selectedDate”에 매핑되는 foodNoteId를 서버에서 얻어야 합니다.
-            const foodNoteId = foodNoteIdByDate[selectedDate] || 1;
+            const foodNoteId = foodNoteIdByDate[selectedDate];
+            if (!foodNoteId) {
+                alert("음식 노트 ID가 없습니다. 날짜를 다시 눌러주세요.");
+                return;
+            }
 
+            // POST /api/dashboard/food
             await axios.post('/api/dashboard/food', {
                 foodNoteId: foodNoteId,
-                foodName: name,
-                intake: amount,
-                unitKcal: calPerUnit
+                foodName:   name,
+                intake:     amount,
+                unitKcal:   calPerUnit
             });
-            // 로컬에도 반영 (서버가 반환해준 foodInfoId를 쓴다면 실제 ID로 교체)
+            // 로컬 반영
             foodList.push({
-                foodInfoId: -1,      // 서버 반환 ID가 없으므로 임시 -1
-                foodName: name,
-                amount: `${amount}${unit}`,
-                cal: cal
+                foodInfoId: -1,  // 실제 서버 반환값을 받으면 교체
+                foodName:   name,
+                amount:     `${amount}${unit}`,
+                cal:        intakeKcal
             });
             foodMap[selectedDate] = foodList;
             renderFoodList();
-            renderKcalEvents(calendar);
+
+            // → 등록 후: 해당 날짜 총 kcal 계산 → 이벤트 부분 업데이트
+            const updatedTotal = foodList.reduce((sum, it) => sum + it.cal, 0);
+            const existing = calendar.getEvents().filter(ev => ev.startStr === selectedDate);
+            if (existing.length > 0) {
+                existing.forEach(ev => ev.setProp('title', `총 ${updatedTotal} kcal`));
+            } else {
+                calendar.addEvent({
+                    title: `총 ${updatedTotal} kcal`,
+                    start: selectedDate,
+                    allDay: true
+                });
+            }
         } catch (err) {
             console.error("서버에서 음식 정보 등록 실패:", err);
+            alert("음식 등록에 실패했습니다. 다시 시도해주세요.");
         }
+
+        // ★ “등록 모드” 상태이므로 이름 입력 활성화
+        nameInput.disabled = false;
     }
 
     // 입력창 초기화
@@ -481,19 +562,20 @@ function renderFoodList() {
         total += item.cal;
         const rowClass = idx % 2 === 0 ? 'food-row-even' : 'food-row-odd';
         listContainer.innerHTML += `
-      <div class="food-row ${rowClass}">
-        <div class="cell-name fw-semibold">${item.foodName}</div>
-        <div class="cell-amount">${item.amount}</div>
-        <div class="cell-kcal">${item.cal}kcal</div>
-        <div class="cell-action">
-          <i class="bi bi-pencil-square text-black fs-5 edit-btn" data-index="${idx}" role="button"></i>
-          <i class="bi bi-x-square text-black fs-5 delete-btn" data-index="${idx}" role="button"></i>
-        </div>
-      </div>`;
+          <div class="food-row ${rowClass}">
+            <div class="cell-name fw-semibold">${item.foodName}</div>
+            <div class="cell-amount">${item.amount}</div>
+            <div class="cell-kcal">${item.cal}kcal</div>
+            <div class="cell-action">
+              <i class="bi bi-pencil-square text-black fs-5 edit-btn" data-index="${idx}" role="button"></i>
+              <i class="bi bi-x-square text-black fs-5 delete-btn" data-index="${idx}" role="button"></i>
+            </div>
+          </div>`;
     });
 
     document.getElementById('total-cal').innerText = total;
-    renderKcalEvents(calendar);
+    // **renderKcalEvents(calendar) 호출은 제거했습니다.**
+    // (전체 달력 리페치가 아니라, “해당 날짜 이벤트만 직접 업데이트”하기 때문)
 }
 
 // ===========================================
@@ -501,6 +583,7 @@ function renderFoodList() {
 // ===========================================
 document.getElementById('food-list').addEventListener('click', async function (e) {
     const idx = Number(e.target.dataset.index);
+
     // “수정” 아이콘 클릭
     if (e.target.classList.contains('edit-btn')) {
         editIndex = idx;
@@ -511,8 +594,11 @@ document.getElementById('food-list').addEventListener('click', async function (e
         nameInput.value = item.foodName;
         amountInput.value = amountVal;
         unitEl.innerText = unitText;
-        nameInput.dataset.calPerUnit = Math.round(item.cal / amountVal * (amountVal || 100));
+        nameInput.dataset.calPerUnit = Math.round(item.cal / (amountVal || 100) * (amountVal || 100));
         document.getElementById('add-food-btn').innerText = '수정';
+
+        // ★ 수정 모드 진입 시 이름(input)을 비활성화
+        nameInput.disabled = true;
 
         document.querySelectorAll('.food-row').forEach(row => row.classList.remove('editing'));
         e.target.closest('.food-row').classList.add('editing');
@@ -532,13 +618,29 @@ document.getElementById('confirm-delete-btn').addEventListener('click', async fu
     if (itemToDelete === null) return;
     const item = foodList[itemToDelete];
     try {
+        // DELETE /api/dashboard/food
         await axios.delete('/api/dashboard/food', { data: { foodInfoId: item.foodInfoId } });
+
+        // (1) 로컬 배열에서 제거
         foodList.splice(itemToDelete, 1);
         foodMap[selectedDate] = foodList;
         renderFoodList();
-        renderKcalEvents(calendar);
+
+        // (2) 해당 날짜 총 kcal 다시 계산 → 이벤트 부분 업데이트
+        const newTotal = foodList.reduce((sum, it) => sum + it.cal, 0);
+        const existing = calendar.getEvents().filter(ev => ev.startStr === selectedDate);
+        if (existing.length > 0) {
+            if (newTotal <= 0) {
+                // 총 kcal이 0이면 해당 이벤트 자체를 지움
+                existing.forEach(ev => ev.remove());
+            } else {
+                // 0 초과면 제목만 업데이트
+                existing.forEach(ev => ev.setProp('title', `총 ${newTotal} kcal`));
+            }
+        }
     } catch (err) {
         console.error("서버에서 음식 삭제 실패:", err);
+        alert("음식 삭제에 실패했습니다. 다시 시도해주세요.");
     }
     bootstrap.Modal.getInstance(document.getElementById('delete-modal')).hide();
     itemToDelete = null;
@@ -554,7 +656,11 @@ document.getElementById('close-panel-btn').addEventListener('click', function ()
 document.addEventListener('click', function (e) {
     const panel = document.getElementById('food-panel');
     if (!panel) return;
-    if (panel.contains(e.target) || e.target.closest('.fc-daygrid-day') || e.target.closest('.modal')) {
+    if (
+        panel.contains(e.target) ||
+        e.target.closest('.fc-daygrid-day') ||
+        e.target.closest('.modal')
+    ) {
         return;
     }
     panel.style.display = 'none';

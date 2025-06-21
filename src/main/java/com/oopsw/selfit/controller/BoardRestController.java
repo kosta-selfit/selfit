@@ -51,7 +51,13 @@ public class BoardRestController {
 	public ResponseEntity<Map<String, Object>> getBoard(@AuthenticationPrincipal AuthenticatedUser loginUser,
 		@PathVariable int boardId) {
 		log.info("getBoard - boardId: {}", boardId);
-		log.info("getBoard - loginUser: {}", loginUser.getMemberId());
+
+		int currentUserId = 0;
+		if (loginUser != null) {
+			currentUserId = loginUser.getMemberId();
+		}
+
+		log.info("getBoard - loginUser: {}", currentUserId);
 		Board board = Board.builder()
 			.boardId(boardId)
 			.build();
@@ -60,7 +66,7 @@ public class BoardRestController {
 
 		Map<String, Object> resp = new HashMap<>();
 		resp.put("board", result);
-		resp.put("currentUserId", loginUser.getMemberId());
+		resp.put("currentUserId", currentUserId);
 
 		return ResponseEntity.ok(resp);
 	}

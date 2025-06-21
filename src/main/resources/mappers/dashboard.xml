@@ -312,6 +312,7 @@
         SELECT FOOD_NOTE_ID AS foodNoteId
         FROM FOOD_NOTE
         WHERE INTAKE_DATE=#{intakeDate} AND MEMBER_ID=#{memberId}
+        LIMIT 1
     </select>
     <select id="getExerciseNoteId" parameterType="com.oopsw.selfit.dto.Exercise" resultType="Integer">
         SELECT Exercise_NOTE_ID AS exerciseNoteId

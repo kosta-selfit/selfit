@@ -111,7 +111,7 @@ public class MemberService {
 			return "gender is invalid";
 		}
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		if (member.getBirthday() != null) {
 			try {
 				LocalDate.parse(member.getBirthday(), formatter);

@@ -63,7 +63,7 @@ public interface DashboardRepository {
 
 	int addChecklist(Checklist checklist);
 
-	int removeChecklist(Checklist checklist);
+	int removeChecklist(int checklistId);
 	// int addCheckItem(Checklist checklist);
 
 	String getGoal(int memberId);
@@ -96,7 +96,7 @@ public interface DashboardRepository {
 
 	// List<Food> getFoodsByIds(List<Integer> foodIds);
 
-	int getFoodNoteId(Food food);
+	Integer getFoodNoteId(Food food);
 
 	Integer getExerciseNoteId(Exercise exercise);
 }

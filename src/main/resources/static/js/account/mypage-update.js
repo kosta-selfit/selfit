@@ -294,16 +294,10 @@ function initEventListeners() {
     $("#nickname").on("input", validateNickname)
 
     // 선택적 필드 검증 - 입력 중인 경우만 검증
-    $("#birthDate").on("input", () => {
-        formatBirthDate()
-        const currentValue = $("#birthDate").val().trim()
-        if (isFieldChanged("birthDate", currentValue)) {
-            validateBirthDate()
-        } else {
-            clearError($("#birthDate"))
-            formState.birthDate.valid = true
-        }
-    })
+    // 선택적 필드 검증
+    $('#birthDate').on('input', function () {
+        formState.birthDate.value = $('#birthDate').val();
+    });
     $("#height").on("input", validateHeight)
     $("#weight").on("input", validateWeight)
 
@@ -323,9 +317,6 @@ function initEventListeners() {
         $(this).addClass("active")
         formState.exerciseType = $(this).data("type")
     })
-
-    // 생년월일 포맷팅 및 키다운 처리
-    $("#birthDate").on("keydown", handleBirthDateKeydown)
 
     // 숫자만 입력
     $(".number-only").on("input", function () {
@@ -478,53 +469,6 @@ function validateNickname() {
     }
 }
 
-function validateBirthDate() {
-    if (!formState.birthDate || typeof formState.birthDate !== "object") {
-        formState.birthDate = {value: "", valid: true}
-    }
-
-    const birthDate = $("#birthDate").val().trim()
-
-    if (!isFieldChanged("birthDate", birthDate)) {
-        formState.birthDate.valid = true
-        clearError($("#birthDate"))
-        return
-    }
-
-    if (!isFieldBeingEdited(birthDate)) {
-        formState.birthDate.valid = true
-        clearError($("#birthDate"))
-        return
-    }
-
-    formState.birthDate.value = birthDate
-
-    const birthDateRegex = /^\d{4}\.\d{2}\.\d{2}$/
-    if (!birthDateRegex.test(birthDate)) {
-        formState.birthDate.valid = false
-        showError($("#birthDate"), "형식: YYYY.MM.DD")
-        return
-    }
-
-    const parts = birthDate.split(".")
-    const year = Number.parseInt(parts[0])
-    const month = Number.parseInt(parts[1])
-    const day = Number.parseInt(parts[2])
-
-    const date = new Date(year, month - 1, day)
-    const isValidDate = date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day
-
-    if (!isValidDate) {
-        formState.birthDate.valid = false
-        showError($("#birthDate"), "올바른 날짜를 입력하세요")
-    } else if (year < 1900 || year > new Date().getFullYear()) {
-        formState.birthDate.valid = false
-        showError($("#birthDate"), "올바른 연도를 입력하세요")
-    } else {
-        formState.birthDate.valid = true
-        clearError($("#birthDate"))
-    }
-}
 
 function validateHeight() {
     if (!formState.height || typeof formState.height !== "object") {
@@ -659,7 +603,6 @@ async function handleSave() {
     }
 
     if (isFieldChanged("birthDate", currentBirthDate)) {
-        validateBirthDate()
         if (!formState.birthDate.valid) hasValidationErrors = true
     }
 
@@ -722,38 +665,6 @@ function resetDuplicateButton($button, text) {
     $button.removeClass("checked")
     $button.find(".btn-text").text(text)
     $button.prop("disabled", false)
-}
-
-function formatBirthDate() {
-    let value = $("#birthDate").val().replace(/\D/g, "")
-
-    if (value.length >= 4) {
-        value = value.substring(0, 4) + "." + value.substring(4)
-    }
-    if (value.length >= 7) {
-        value = value.substring(0, 7) + "." + value.substring(7, 9)
-    }
-
-    $("#birthDate").val(value)
-}
-
-function handleBirthDateKeydown(e) {
-    const $input = $(e.target)
-    const value = $input.val()
-
-    if (e.keyCode === 8) {
-        const cursorPos = $input[0].selectionStart
-
-        if (cursorPos > 0 && value.charAt(cursorPos - 1) === ".") {
-            e.preventDefault()
-            const newValue = value.substring(0, cursorPos - 2) + value.substring(cursorPos)
-            $input.val(newValue)
-
-            setTimeout(() => {
-                $input[0].setSelectionRange(cursorPos - 2, cursorPos - 2)
-            }, 0)
-        }
-    }
 }
 
 // =========================== 프로필 이미지 업로드 ===========================

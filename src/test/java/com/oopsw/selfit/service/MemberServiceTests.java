@@ -97,12 +97,12 @@ public class MemberServiceTests {
 		// given
 		String pw = "ko1234";
 		Member member = Member.builder()
-			.email("newuser@example.com")
+			.email("newu@example.com")
 			.pw(pw)
 			.name("새사용자")
 			.nickname("newbie")
-			.gender("남성")
-			.birthday("2000-01-01")
+			.gender("남자")
+			.birthday("2000.01.01")
 			.height(175.0f)
 			.weight(70.0f)
 			.goal("유지")
@@ -124,11 +124,11 @@ public class MemberServiceTests {
 	public void testAddMemberGoogle() {
 		// given
 		Member member = Member.builder()
-			.email("newuser@gmail.com")
+			.email("newu@example.com")
 			.name("새사용자")
 			.nickname("newbie")
-			.gender("남성")
-			.birthday("2000-01-01")
+			.gender("남자")
+			.birthday("2000.01.01")
 			.height(175.0f)
 			.weight(70.0f)
 			.goal("유지")

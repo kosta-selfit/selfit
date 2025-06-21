@@ -51,7 +51,6 @@ public class MemberRestController {
 
 	@PostMapping("/member")
 	public ResponseEntity<Map<String, Boolean>> addMember(@RequestBody Member member, HttpServletRequest request) {
-
 		memberService.addMember(member);
 		saveSession(member, request);
 

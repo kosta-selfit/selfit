@@ -39,6 +39,7 @@ public class ExerciseInfoService {
 			.exerciseMin(exercise.getExerciseMin())
 			.exerciseKcal(kcal)
 			.exerciseName(exercise.getExerciseName())
+			.met(exercise.getMet())
 			.build();
 
 		// JPA 저장

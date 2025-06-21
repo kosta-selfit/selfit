@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.oopsw.selfit.dto.Checklist;
 import com.oopsw.selfit.dto.Exercise;
@@ -95,9 +96,13 @@ public class DashboardService {
 	// 	return dashboardRepository.getAutoCompleteFood(partWord);
 	// }
 
+	@Transactional
 	public int addFoodList(Food food) {
-		int exists = dashboardRepository.isChecklist(food.getMemberId(), food.getIntakeDate());
-		isAlreadyExists(exists, "식단 기록", food.getIntakeDate());
+		int cnt = dashboardRepository.isFoodNote(food.getMemberId(), food.getIntakeDate());
+		if (cnt > 0) {
+			Integer existId = dashboardRepository.getFoodNoteId(food);
+			return existId;
+		}
 
 		dashboardRepository.addFoodList(food);
 		return food.getFoodNoteId();
@@ -252,8 +257,8 @@ public class DashboardService {
 		return checklist.getChecklistId();
 	}
 
-	public boolean removeChecklist(Checklist checklist) {
-		return dashboardRepository.removeChecklist(checklist) > 0;
+	public boolean removeChecklist(int checklistId) {
+		return dashboardRepository.removeChecklist(checklistId) > 0;
 	}
 
 	// public boolean addCheckItem(Checklist checklist) {
