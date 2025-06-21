@@ -32,48 +32,49 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http, CustomOAuth2UserService customOAuth2UserService) throws
 		Exception {
 		http.csrf(csrf -> csrf.disable());
-		http
-			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/board/list").permitAll()
-				.requestMatchers("/board/detail/**").permitAll()
-				.requestMatchers(HttpMethod.POST, "/api/account/member").permitAll()
-				.requestMatchers("/account/login").permitAll()
-				.requestMatchers("/account/signup").permitAll()
-				.requestMatchers("/account/signup-oauth").permitAll()
-				.requestMatchers("/api/account/member/check-login").permitAll()
-				.requestMatchers("/board/**").hasRole("USER")
-				.requestMatchers("/dashboard/**").hasRole("USER")
-				.requestMatchers("/account/**").hasRole("USER")
-				.requestMatchers("/api/account/member/**").hasRole("USER")
-				.anyRequest().permitAll()
-			);
+		http.authorizeHttpRequests(auth -> auth.requestMatchers("/board/list")
+			.permitAll()
+			.requestMatchers("/board/detail/**")
+			.permitAll()
+			.requestMatchers(HttpMethod.POST, "/api/account/member")
+			.permitAll()
+			.requestMatchers("/account/login")
+			.permitAll()
+			.requestMatchers("/account/signup")
+			.permitAll()
+			.requestMatchers("/account/signup-oauth")
+			.permitAll()
+			.requestMatchers("/api/account/member/check-login")
+			.permitAll()
+			.requestMatchers("/board/**")
+			.hasRole("USER")
+			.requestMatchers("/dashboard/**")
+			.hasRole("USER")
+			.requestMatchers("/account/**")
+			.hasRole("USER")
+			.requestMatchers("/api/account/member/**")
+			.hasRole("USER")
+			.anyRequest()
+			.permitAll());
 
-		http.formLogin(form -> form
-			.loginPage("/account/login")
+		http.formLogin(form -> form.loginPage("/account/login")
 			.loginProcessingUrl("/api/account/login-process")
 			.usernameParameter("loginId")
 			.passwordParameter("loginPassword")
 			.defaultSuccessUrl("/dashboard")
 			.successHandler(successHandler())
 			.failureHandler(failureHandler())
-			.permitAll()
-		);
+			.permitAll());
 
-		http
-			.oauth2Login(oauth2 -> oauth2
-				.userInfoEndpoint(userInfo -> userInfo
-					.userService(customOAuth2UserService))
-				.successHandler(oAuth2SuccessHandler())
-				.failureHandler(oAuth2FailureHandler())
-			);
+		http.oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+			.successHandler(oAuth2SuccessHandler())
+			.failureHandler(oAuth2FailureHandler()));
 
-		http.logout(logout -> logout
-			.logoutUrl("/account/logout")
+		http.logout(logout -> logout.logoutUrl("/account/logout")
 			.logoutSuccessUrl("/account/login")
 			.invalidateHttpSession(true)
 			.clearAuthentication(true)
-			.deleteCookies("JSESSIONID")
-		);
+			.deleteCookies("JSESSIONID"));
 
 		return http.build();
 

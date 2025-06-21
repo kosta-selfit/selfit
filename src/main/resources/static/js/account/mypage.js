@@ -1,4 +1,4 @@
-import {showAlertModal, showSuccessModal, showErrorModal} from './basic-modal.js';
+import {showErrorModal, showSuccessModal} from './basic-modal.js';
 
 $(() => {
     // API 기본 경로 설정

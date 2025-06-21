@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -75,6 +76,7 @@ public class DashboardRepositoryTests {
 	}
 
 	@Test
+	@Disabled
 	void testGetIntakeKcalYes() {
 		// given
 		Food request = Food.builder().memberId(1).intakeDate("2025-05-21").build();

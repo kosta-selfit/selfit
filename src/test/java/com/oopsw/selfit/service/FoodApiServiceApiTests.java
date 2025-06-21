@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.oopsw.selfit.dto.FoodApi;
-import com.oopsw.selfit.repository.FoodApiRepository;
 
 import reactor.core.publisher.Mono;
 

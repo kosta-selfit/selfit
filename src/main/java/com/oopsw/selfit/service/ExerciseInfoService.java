@@ -29,9 +29,9 @@ public class ExerciseInfoService {
 
 	public boolean addExerciseInfo(Exercise exercise) {
 		// 소모 칼로리 계산
-		float kcal = dashboardRepository.getWeight(exercise.getExerciseNoteId()) *
-			exercise.getMet() *
-			exercise.getExerciseMin() / 60f;
+		float kcal =
+			dashboardRepository.getWeight(exercise.getExerciseNoteId()) * exercise.getMet() * exercise.getExerciseMin()
+				/ 60f;
 
 		// DTO → Entity 수동 변환
 		ExerciseInfos entity = ExerciseInfos.builder()
@@ -82,7 +82,6 @@ public class ExerciseInfoService {
 		}
 		return exerciseList;
 	}
-
 
 }
 

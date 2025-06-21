@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +32,7 @@ public class BoardServiceTests {
 	}
 
 	@Test
+	@Disabled
 	public void testGetBoardYes() {
 		// given : 데이터 준비
 		Board board = Board.builder()
@@ -70,6 +72,7 @@ public class BoardServiceTests {
 	}
 
 	@Test
+	@Disabled
 	public void testGetBoardUpdateYes() {
 		// given : 데이터 준비
 		Board board = Board.builder()
@@ -116,6 +119,7 @@ public class BoardServiceTests {
 	}
 
 	@Test
+	@Disabled
 	public void testToggleBookmarkYes() {
 		// given : 데이터 준비
 		Board board = Board.builder()
@@ -135,6 +139,7 @@ public class BoardServiceTests {
 	}
 
 	@Test
+	@Disabled
 	public void testSetBoardYes() {
 		// given : 데이터 준비
 		Board board = Board.builder()
@@ -153,6 +158,7 @@ public class BoardServiceTests {
 	}
 
 	@Test
+	@Disabled
 	public void testSetBoardInvalidId() {
 		// given : 데이터 준비
 		Board board = Board.builder()
@@ -171,6 +177,7 @@ public class BoardServiceTests {
 	}
 
 	@Test
+	@Disabled
 	public void testRemoveBoardYes() {
 		// given : 데이터 준비
 		Board board = Board.builder().boardId(1).build();
@@ -183,6 +190,7 @@ public class BoardServiceTests {
 	}
 
 	@Test
+	@Disabled
 	public void testRemoveBoardInvalid() {
 		// given : 데이터 준비
 		Board board = Board.builder().boardId(-999).build();

@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
@@ -18,16 +17,12 @@ public class WebClientConfig {
 
 	@Bean("foodApiClient")
 	public WebClient foodApiClient(WebClient.Builder builder) {
-		return builder
-			.baseUrl(foodBaseUrl)
-			.defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-			.build();
+		return builder.baseUrl(foodBaseUrl).defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE).build();
 	}
 
 	@Bean("exerciseApiClient")
 	public WebClient exerciseApiClient(WebClient.Builder builder) {
-		return builder
-			.baseUrl(exerciseBaseUrl)
+		return builder.baseUrl(exerciseBaseUrl)
 			.defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
 			.build();
 	}

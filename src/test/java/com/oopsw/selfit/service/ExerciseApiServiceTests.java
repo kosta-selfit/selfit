@@ -1,6 +1,7 @@
 package com.oopsw.selfit.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
 import java.util.stream.Collectors;
 

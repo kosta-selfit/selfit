@@ -20,7 +20,7 @@ public class FoodInfoService {
 	private final DashboardRepository dashboardRepository;
 
 	public boolean removeFood(int foodInfoId) {
-		if(foodInfoRepository.existsById(foodInfoId)) {
+		if (foodInfoRepository.existsById(foodInfoId)) {
 			foodInfoRepository.deleteById(foodInfoId);
 			return true;
 		}
@@ -28,11 +28,11 @@ public class FoodInfoService {
 	}
 
 	public boolean setIntake(int foodInfoId, int newIntake) {
-		if(foodInfoRepository.existsById(foodInfoId)) {
+		if (foodInfoRepository.existsById(foodInfoId)) {
 			Optional<FoodInfos> foodInfo = foodInfoRepository.findById(foodInfoId);
 			foodInfo.get().setIntake(newIntake);
 			int unitKcal = foodInfo.get().getUnitKcal();
-			foodInfo.get().setIntakeKcal((float)unitKcal/100f*(foodInfo.get().getIntake()));
+			foodInfo.get().setIntakeKcal((float)unitKcal / 100f * (foodInfo.get().getIntake()));
 			foodInfoRepository.save(foodInfo.get());
 
 			return true;
@@ -48,7 +48,7 @@ public class FoodInfoService {
 			.foodName(food.getFoodName())
 			.intake(food.getIntake())
 			.unitKcal(food.getUnitKcal())
-			.intakeKcal((float) food.getUnitKcal() / 100f * food.getIntake())
+			.intakeKcal((float)food.getUnitKcal() / 100f * food.getIntake())
 			.build();
 
 		// 저장

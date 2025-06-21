@@ -39,7 +39,7 @@ import lombok.RequiredArgsConstructor;
 public class MemberRestController {
 
 	private static final int PAGE_LIMIT = 5;
-	private static Gson gson = new Gson();
+	private static final Gson gson = new Gson();
 	private final MemberService memberService;
 	private final CustomOAuth2UserService customOAuth2UserService;
 	private final CustomUserDetailsService customUserDetailsService;
@@ -99,10 +99,7 @@ public class MemberRestController {
 
 	@GetMapping("/member/check-login")
 	public ResponseEntity<Map<String, Boolean>> checkLoginStatus(@AuthenticationPrincipal AuthenticatedUser loginUser) {
-		boolean result = false;
-		if (loginUser != null) {
-			result = true;
-		}
+		boolean result = loginUser != null;
 		return ResponseEntity.ok(Map.of("result", result));
 	}
 

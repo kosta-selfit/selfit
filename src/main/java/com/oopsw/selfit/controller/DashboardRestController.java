@@ -23,8 +23,8 @@ import com.oopsw.selfit.dto.Member;
 import com.oopsw.selfit.service.CheckService;
 import com.oopsw.selfit.service.DashboardService;
 import com.oopsw.selfit.service.ExerciseApiService;
-import com.oopsw.selfit.service.FoodApiService;
 import com.oopsw.selfit.service.ExerciseInfoService;
+import com.oopsw.selfit.service.FoodApiService;
 import com.oopsw.selfit.service.FoodInfoService;
 
 import lombok.RequiredArgsConstructor;
@@ -43,41 +43,44 @@ public class DashboardRestController {
 
 	@PostMapping("/food/openSearch")
 	public Mono<List<FoodApi>> openFoodSearch(@RequestBody Map<String, Object> payload) {
-		String keyword = (String) payload.get("keyword");
-		int pageNo   = ((Number) payload.get("pageNo")).intValue();
-		int numOfRows= ((Number) payload.get("numOfRows")).intValue();
+		String keyword = (String)payload.get("keyword");
+		int pageNo = ((Number)payload.get("pageNo")).intValue();
+		int numOfRows = ((Number)payload.get("numOfRows")).intValue();
 		return foodApiService.getFoodByNameLike(keyword, pageNo, numOfRows);
 	}
 
 	@PostMapping("/exercise/openSearch")
 	public Mono<List<ExerciseApi>> openExerciseSearch(@RequestBody Map<String, Object> payload) {
-		String keyword = (String) payload.get("keyword");
-		int pageNo   = ((Number) payload.get("pageNo")).intValue();
-		int numOfRows= ((Number) payload.get("numOfRows")).intValue();
+		String keyword = (String)payload.get("keyword");
+		int pageNo = ((Number)payload.get("pageNo")).intValue();
+		int numOfRows = ((Number)payload.get("numOfRows")).intValue();
 		return exerciseApiService.getExercisesByNameLike(keyword, pageNo, numOfRows);
 	}
 
-
 	@PostMapping("/bmr")
-	public ResponseEntity<Map<String, Integer>> getBmr(@RequestBody Member member, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<Map<String, Integer>> getBmr(@RequestBody Member member,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		member.setMemberId(loginUser.getMemberId());
 		return ResponseEntity.ok(Map.of("bmr", dashboardService.getBmr(member.getMemberId())));
 	}
 
 	@PostMapping("/food/kcal")
-	public ResponseEntity<Food> getIntakeKcal(@RequestBody Food food, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<Food> getIntakeKcal(@RequestBody Food food,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		food.setMemberId(loginUser.getMemberId());
 		return ResponseEntity.ok(dashboardService.getIntakeKcal(food));
 	}
 
 	@PostMapping("/exercise/kcal")
-	public ResponseEntity<Exercise> getExerciseKcal(@RequestBody Exercise exercise, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<Exercise> getExerciseKcal(@RequestBody Exercise exercise,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		exercise.setMemberId(loginUser.getMemberId());
 		return ResponseEntity.ok(dashboardService.getExerciseKcal(exercise));
 	}
 
 	@PostMapping("/food/kcal/year")
-	public ResponseEntity<List<Food>> getYearIntakeKcal(@RequestBody Map<String, Object> param, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<List<Food>> getYearIntakeKcal(@RequestBody Map<String, Object> param,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		HashMap<String, Object> map = new HashMap<>();
 		map.put("memberId", loginUser.getMemberId());
 		map.put("intakeYear", ((Number)param.get("intakeYear")).intValue());
@@ -86,7 +89,8 @@ public class DashboardRestController {
 	}
 
 	@PostMapping("/exercise/kcal/year")
-	public ResponseEntity<List<Exercise>> getYearExerciseKcal(@RequestBody Map<String, Object> param, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<List<Exercise>> getYearExerciseKcal(@RequestBody Map<String, Object> param,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		HashMap<String, Object> map = new HashMap<>();
 
 		map.put("memberId", loginUser.getMemberId());
@@ -96,76 +100,88 @@ public class DashboardRestController {
 	}
 
 	@PostMapping("/food/list")
-	public ResponseEntity<Map<String, Integer>> addFoodList(@RequestBody Food food, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<Map<String, Integer>> addFoodList(@RequestBody Food food,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		food.setMemberId(loginUser.getMemberId());
 		return ResponseEntity.ok(Map.of("foodNoteId", dashboardService.addFoodList(food)));
 	}
 
 	@DeleteMapping("/food/list")
-	public ResponseEntity<Map<String, Boolean>> removeFoodList(@RequestBody Food food, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<Map<String, Boolean>> removeFoodList(@RequestBody Food food,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		food.setMemberId(loginUser.getMemberId());
 		return ResponseEntity.ok(Map.of("success", dashboardService.removeFoodList(food)));
 	}
 
 	@PostMapping("/exercise/list")
-	public ResponseEntity<Map<String, Integer>> addExerciseList(@RequestBody Exercise exercise, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<Map<String, Integer>> addExerciseList(@RequestBody Exercise exercise,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		exercise.setMemberId(loginUser.getMemberId());
 		int noteId = dashboardService.addExerciseList(exercise);
 		return ResponseEntity.ok(Map.of("exerciseNoteId", noteId));
 	}
 
 	@DeleteMapping("/exercise/list")
-	public ResponseEntity<Map<String, Boolean>> removeExerciseList(@RequestBody Exercise exercise, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<Map<String, Boolean>> removeExerciseList(@RequestBody Exercise exercise,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		exercise.setMemberId(loginUser.getMemberId());
 		return ResponseEntity.ok(Map.of("success", dashboardService.removeExerciseList(exercise)));
 	}
 
 	@PostMapping("/goal")
-	public ResponseEntity<Map<String, String>> getGoal(@RequestBody Member member, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<Map<String, String>> getGoal(@RequestBody Member member,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		member.setMemberId(loginUser.getMemberId());
 		return ResponseEntity.ok(Map.of("goal", dashboardService.getGoal(member.getMemberId())));
 	}
 
 	@PostMapping("/food/kcal/avg/year")
-	public ResponseEntity<List<Map<String, Object>>> getYearIntakeAvgAll(@RequestBody Map<String, Integer> param, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<List<Map<String, Object>>> getYearIntakeAvgAll(@RequestBody Map<String, Integer> param,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		int memberId = loginUser.getMemberId(); //param.get("memberId");
 		int intakeYear = param.get("intakeYear");
 		return ResponseEntity.ok(dashboardService.getYearIntakeAvgAll(memberId, intakeYear));
 	}
 
 	@PostMapping("/exercise/kcal/avg/year")
-	public ResponseEntity<List<Map<String, Object>>> getYearExerciseAvgAll(@RequestBody Map<String, Integer> param, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<List<Map<String, Object>>> getYearExerciseAvgAll(@RequestBody Map<String, Integer> param,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		int memberId = loginUser.getMemberId(); //param.get("memberId");
 		int exerciseYear = param.get("exerciseYear");
 		return ResponseEntity.ok(dashboardService.getYearExerciseAvgAll(memberId, exerciseYear));
 	}
 
 	@PostMapping("/checklist/items")
-	public ResponseEntity<List<Checklist>> getCheckList(@RequestBody Checklist checklist, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<List<Checklist>> getCheckList(@RequestBody Checklist checklist,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		checklist.setMemberId(loginUser.getMemberId());
 		return ResponseEntity.ok(dashboardService.getCheckList(checklist));
 	}
 
 	@PutMapping("/checklist/item")
-	public ResponseEntity<Map<String, Boolean>> setCheckItem(@RequestBody Checklist checklist, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<Map<String, Boolean>> setCheckItem(@RequestBody Checklist checklist,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		checklist.setMemberId(loginUser.getMemberId());
 		return ResponseEntity.ok(Map.of("success", checkService.setCheckItem(checklist)));
 	}
 
 	@PutMapping("/checklist/item/check")
-	public ResponseEntity<Map<String, Boolean>> setIsCheckItem(@RequestBody Checklist checklist, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<Map<String, Boolean>> setIsCheckItem(@RequestBody Checklist checklist,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		checklist.setMemberId(loginUser.getMemberId());
 		return ResponseEntity.ok(Map.of("success", checkService.setIsCheckItem(checklist)));
 	}
 
 	@DeleteMapping("/checklist/item")
-	public ResponseEntity<Map<String, Boolean>> removeCheckItem(@RequestBody Checklist checklist, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<Map<String, Boolean>> removeCheckItem(@RequestBody Checklist checklist,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		checklist.setMemberId(loginUser.getMemberId());
 		return ResponseEntity.ok(Map.of("success", checkService.removeCheckItem(checklist)));
 	}
 
 	@PostMapping("/checklist")
-	public ResponseEntity<Map<String, Integer>> addChecklist(@RequestBody Checklist checklist, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<Map<String, Integer>> addChecklist(@RequestBody Checklist checklist,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		checklist.setMemberId(loginUser.getMemberId());
 		return ResponseEntity.ok(Map.of("checklistId", dashboardService.addChecklist(checklist)));
 	}
@@ -176,7 +192,8 @@ public class DashboardRestController {
 	}
 
 	@PostMapping("/checklist/item")
-	public ResponseEntity<Map<String, Boolean>> addCheckItem(@RequestBody Checklist checklist, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<Map<String, Boolean>> addCheckItem(@RequestBody Checklist checklist,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		checklist.setMemberId(loginUser.getMemberId());
 		return ResponseEntity.ok(Map.of("success", checkService.addCheckItem(checklist)));
 	}
@@ -204,7 +221,8 @@ public class DashboardRestController {
 	}
 
 	@PostMapping("/foods")
-	public ResponseEntity<List<Food>> getFoodInfos(@RequestBody Map<String, Object> foods, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<List<Food>> getFoodInfos(@RequestBody Map<String, Object> foods,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		Food food = Food.builder()
 			.intakeDate((String)foods.get("intakeDate"))
 			.memberId(loginUser.getMemberId())
@@ -236,7 +254,8 @@ public class DashboardRestController {
 	}
 
 	@PostMapping("/exercises")
-	public ResponseEntity<List<Exercise>> getExerciseInfos(@RequestBody Map<String, Object> exercises, @AuthenticationPrincipal AuthenticatedUser loginUser) {
+	public ResponseEntity<List<Exercise>> getExerciseInfos(@RequestBody Map<String, Object> exercises,
+		@AuthenticationPrincipal AuthenticatedUser loginUser) {
 		Exercise exercise = Exercise.builder()
 			.exerciseDate((String)exercises.get("exerciseDate"))
 			.memberId(loginUser.getMemberId())

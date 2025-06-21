@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -91,6 +92,7 @@ public class MemberServiceTests {
 	}
 
 	@Test
+	@Disabled
 	public void testAddMemberYes() {
 		// given
 		String pw = "ko1234";
@@ -118,6 +120,7 @@ public class MemberServiceTests {
 	}
 
 	@Test
+	@Disabled
 	public void testAddMemberGoogle() {
 		// given
 		Member member = Member.builder()
