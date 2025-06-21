@@ -11,7 +11,8 @@
     overflow: hidden;
     transition: box-shadow 0.3s ease;
 }
-#exercise-panel.card{
+
+#exercise-panel.card {
     overflow: visible;
 }
 
@@ -315,9 +316,11 @@
     border-bottom: 1px solid #e5e7eb;
     transition: background 0.2s ease;
 }
+
 .autocomplete-item:last-child {
     border-bottom: none;
 }
+
 .autocomplete-item:hover {
     background: #f3f4f6;
 }
@@ -328,11 +331,13 @@
     flex-direction: column;
     gap: 0.25rem;
 }
+
 .info-name {
     font-size: 0.95rem;
     font-weight: 500;
     color: #111827;
 }
+
 .info-detail {
     font-size: 0.85rem;
     color: #6b7280;

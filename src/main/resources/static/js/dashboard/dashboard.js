@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 최대 칼로리 목표 (예: 2000kcal)
     // ------------------------------
     const maxCalories = 2000;
+
     function valueToPercent(value) {
         return (value * 100) / maxCalories;
     }
@@ -40,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await axios.post(
                 "/api/dashboard/bmr",
                 {},
-                { headers: JSON_HEADERS }
+                {headers: JSON_HEADERS}
             );
             return response.data.bmr;
         } catch (err) {
@@ -52,8 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/food/kcal",
-                { intakeDate: dateStr },
-                { headers: JSON_HEADERS }
+                {intakeDate: dateStr},
+                {headers: JSON_HEADERS}
             );
             // 백엔드에서 { intakeSum: number } 형태로 응답한다고 가정
             return response.data.intakeSum ?? 0;
@@ -66,8 +67,8 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/exercise/kcal",
-                { exerciseDate: dateStr },
-                { headers: JSON_HEADERS }
+                {exerciseDate: dateStr},
+                {headers: JSON_HEADERS}
             );
             // 백엔드에서 { exerciseSum: number } 형태로 응답한다고 가정
             return response.data.exerciseSum ?? 0;
@@ -83,8 +84,8 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/foods",
-                { intakeDate: dateStr },
-                { headers: JSON_HEADERS }
+                {intakeDate: dateStr},
+                {headers: JSON_HEADERS}
             );
             return response.data;
         } catch (err) {
@@ -96,8 +97,8 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/exercises",
-                { exerciseDate: dateStr },
-                { headers: JSON_HEADERS }
+                {exerciseDate: dateStr},
+                {headers: JSON_HEADERS}
             );
             return response.data;
         } catch (err) {
@@ -112,8 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/food/kcal/avg/year",
-                { intakeYear: parseInt(year) },
-                { headers: JSON_HEADERS }
+                {intakeYear: parseInt(year)},
+                {headers: JSON_HEADERS}
             );
             return response.data;
         } catch (err) {
@@ -125,8 +126,8 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/exercise/kcal/avg/year",
-                { exerciseYear: parseInt(year) },
-                { headers: JSON_HEADERS }
+                {exerciseYear: parseInt(year)},
+                {headers: JSON_HEADERS}
             );
             return response.data;
         } catch (err) {
@@ -179,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     size: "85%",
                     startAngle: -90,
                     endAngle: 270,
-                    hollow: { size: "30%" },
+                    hollow: {size: "30%"},
                     track: {
                         background: "#f1f5f9",
                         strokeWidth: "100%",
@@ -246,8 +247,8 @@ document.addEventListener("DOMContentLoaded", () => {
             ],
             colors: [intakeExceeded ? "#f59e0b" : "#33C181", exerciseExceeded ? "#ec4899" : "#11C6CF"],
             labels: ["섭취", "운동"],
-            legend: { show: false },
-            stroke: { lineCap: "round" }
+            legend: {show: false},
+            stroke: {lineCap: "round"}
         };
     }
 
@@ -334,8 +335,8 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/food/kcal/year",
-                { intakeYear: parseInt(year) },
-                { headers: JSON_HEADERS }
+                {intakeYear: parseInt(year)},
+                {headers: JSON_HEADERS}
             );
             // 백엔드에서 [{ intakeDate: "YYYY-MM-DD", intakeSum: number }, …] 형태로 응답한다고 가정
             return response.data;
@@ -348,8 +349,8 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/food/kcal/avg/year",
-                { intakeYear: parseInt(year) },
-                { headers: JSON_HEADERS }
+                {intakeYear: parseInt(year)},
+                {headers: JSON_HEADERS}
             );
             // 백엔드에서 [{ intakeDate: "YYYY-MM-DD", avgIntakeKcal: number }, …] 형태로 응답한다고 가정
             return response.data;
@@ -362,8 +363,8 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/exercise/kcal/year",
-                { exerciseYear: parseInt(year) },
-                { headers: JSON_HEADERS }
+                {exerciseYear: parseInt(year)},
+                {headers: JSON_HEADERS}
             );
             // 백엔드에서 [{ exerciseDate: "YYYY-MM-DD", exerciseSum: number }, …] 형태로 응답한다고 가정
             return response.data;
@@ -376,8 +377,8 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/exercise/kcal/avg/year",
-                { exerciseYear: parseInt(year) },
-                { headers: JSON_HEADERS }
+                {exerciseYear: parseInt(year)},
+                {headers: JSON_HEADERS}
             );
             // 백엔드에서 [{ EXERCISE_DATE: "YYYY-MM-DD", avgKcal: number }, …] 형태로 응답한다고 가정
             return response.data;
@@ -424,7 +425,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const dateKey = item.intakeDate;
                 if (!dateKey) return;
                 if (!mapByDate[dateKey]) {
-                    mapByDate[dateKey] = { my: 0, avg: 0 };
+                    mapByDate[dateKey] = {my: 0, avg: 0};
                 }
                 mapByDate[dateKey].avg = item.avgIntakeKcal ?? 0;
             });
@@ -436,7 +437,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // 4) 정렬된 날짜 순서대로 myData, avgData, categories 채우기
             sortedDates.forEach((dateStr) => {
-                const { my, avg } = mapByDate[dateStr];
+                const {my, avg} = mapByDate[dateStr];
                 myData.push(my);
                 avgData.push(avg);
 
@@ -480,7 +481,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!dateKey) return;
 
                 if (!mapByDate[dateKey]) {
-                    mapByDate[dateKey] = { my: 0, avg: 0 };
+                    mapByDate[dateKey] = {my: 0, avg: 0};
                 }
                 mapByDate[dateKey].avg = item.avgKcal ?? 0;
             });
@@ -491,7 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
             sortedDates.forEach((dateStr) => {
-                const { my, avg } = mapByDate[dateStr];
+                const {my, avg} = mapByDate[dateStr];
                 myData.push(my);
                 avgData.push(avg);
 
@@ -504,13 +505,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         return {
             series: [
-                { name: "나의 기록", data: myData },
-                { name: "평균 기록", data: avgData }
+                {name: "나의 기록", data: myData},
+                {name: "평균 기록", data: avgData}
             ],
             chart: {
                 height: 240,
                 type: "line",
-                animations: { enabled: true, easing: "easeinout", speed: 800 }
+                animations: {enabled: true, easing: "easeinout", speed: 800}
             },
             stroke: {
                 width: [5, 3],
@@ -521,7 +522,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 type: "category",
                 categories: categories,
                 tickAmount: 6,
-                labels: { style: { fontSize: "12px", colors: "#6b7280" } }
+                labels: {style: {fontSize: "12px", colors: "#6b7280"}}
             },
             yaxis: {
                 min: 0,
@@ -529,18 +530,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 tickAmount: 5,
                 labels: {
                     formatter: (val) => val,
-                    style: { fontSize: "12px", colors: "#6b7280" }
+                    style: {fontSize: "12px", colors: "#6b7280"}
                 },
                 title: {
                     text: "kcal",
                     rotate: -90,
-                    style: { fontSize: "14px", color: "#6b7280", fontWeight: 500 }
+                    style: {fontSize: "14px", color: "#6b7280", fontWeight: 500}
                 }
             },
             title: {
                 text: `기록 비교 - ${compareType} (${year})`,
                 align: "left",
-                style: { fontSize: "16px", color: "#666" }
+                style: {fontSize: "16px", color: "#666"}
             },
             fill: {
                 type: "gradient",
@@ -555,14 +556,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             },
             colors: ["#33C181", "#11C6CF"],
-            markers: { size: 0, hover: { size: 6 } },
+            markers: {size: 0, hover: {size: 6}},
             tooltip: {
                 shared: true,
                 intersect: false,
-                y: { formatter: (val) => val + " kcal" }
+                y: {formatter: (val) => val + " kcal"}
             },
-            legend: { show: true, position: "top", horizontalAlign: "right" },
-            grid: { borderColor: "#f3f4f6", padding: { left: 0, right: 0 } }
+            legend: {show: true, position: "top", horizontalAlign: "right"},
+            grid: {borderColor: "#f3f4f6", padding: {left: 0, right: 0}}
         };
     }
 
@@ -664,8 +665,8 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await axios.post(
                 "/api/dashboard/checklist/items",
-                { checkDate: today },
-                { headers: JSON_HEADERS }
+                {checkDate: today},
+                {headers: JSON_HEADERS}
             );
             return response.data;
         } catch (err) {
@@ -719,7 +720,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             checkId: item.checkId,
                             isCheck: newValue
                         },
-                        { headers: JSON_HEADERS }
+                        {headers: JSON_HEADERS}
                     );
                     console.log(`checkId=${item.checkId} 상태 변경: ${newValue}`);
                 } catch (err) {

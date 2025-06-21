@@ -12,9 +12,9 @@ import lombok.Setter;
 @Setter
 @Builder
 public class User {
+	private final String role = "ROLE_USER";
 	private int memberId;
 	private String email;
 	private String pw;
-	private final String role = "ROLE_USER";
 
 }

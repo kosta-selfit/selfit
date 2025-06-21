@@ -148,14 +148,14 @@
     <select id="getFoodNoteId" parameterType="com.oopsw.selfit.dto.Food" resultType="Integer">
         SELECT FOOD_NOTE_ID AS foodNoteId
         FROM FOOD_NOTE
-        WHERE INTAKE_DATE=#{intakeDate} AND MEMBER_ID=#{memberId}
-        LIMIT 1
+        WHERE INTAKE_DATE = #{intakeDate}
+          AND MEMBER_ID = #{memberId} LIMIT 1
     </select>
     <select id="getExerciseNoteId" parameterType="com.oopsw.selfit.dto.Exercise" resultType="Integer">
         SELECT Exercise_NOTE_ID AS exerciseNoteId
         FROM EXERCISE_NOTE
-        WHERE EXERCISE_DATE=#{exerciseDate} AND MEMBER_ID=#{memberId}
-        LIMIT 1
+        WHERE EXERCISE_DATE = #{exerciseDate}
+          AND MEMBER_ID = #{memberId} LIMIT 1
     </select>
     <delete id="removeChecklist" parameterType="int">
         DELETE

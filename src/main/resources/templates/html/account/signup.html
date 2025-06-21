@@ -2,15 +2,15 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>회원가입</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="/css/account/signup.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/css/account/signup.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script type="module" src="/js/account/signup.js"></script>
+    <script src="/js/account/signup.js" type="module"></script>
 </head>
 <body>
 <!-- 메인 컨테이너 -->
@@ -48,10 +48,10 @@
                                 </label>
                                 <div class="d-flex gap-2">
                                     <div class="input-wrapper flex-grow-1">
-                                        <input type="email" class="form-control" id="email">
+                                        <input class="form-control" id="email" type="email">
                                         <i class="bi bi-check-lg check-icon"></i>
                                     </div>
-                                    <button type="button" class="btn btn-duplicate" id="emailCheck">
+                                    <button class="btn btn-duplicate" id="emailCheck" type="button">
                                         <span class="btn-text">중복확인</span>
                                         <span class="btn-loading d-none">
                                                 <span class="spinner-border spinner-border-sm me-1"></span>
@@ -70,7 +70,7 @@
                                     <small class="text-muted ms-2">8~20자, 숫자, 특수문자 포함</small>
                                 </label>
                                 <div class="input-wrapper">
-                                    <input type="password" class="form-control" id="password">
+                                    <input class="form-control" id="password" type="password">
                                     <i class="bi bi-check-lg check-icon"></i>
                                 </div>
                                 <div class="invalid-feedback"></div>
@@ -79,7 +79,7 @@
                             <!-- 비밀번호 확인 -->
                             <div class="mb-3">
                                 <label class="form-label text-muted">비밀번호 확인</label>
-                                <input type="password" class="form-control" id="passwordConfirm">
+                                <input class="form-control" id="passwordConfirm" type="password">
                                 <div class="invalid-feedback"></div>
                             </div>
 
@@ -90,7 +90,7 @@
                                     <span class="required-mark">*</span>
                                 </label>
                                 <div class="input-wrapper">
-                                    <input type="text" class="form-control" id="name">
+                                    <input class="form-control" id="name" type="text">
                                     <i class="bi bi-check-lg check-icon"></i>
                                 </div>
                                 <div class="invalid-feedback"></div>
@@ -104,10 +104,10 @@
                                 </label>
                                 <div class="d-flex gap-2">
                                     <div class="input-wrapper flex-grow-1">
-                                        <input type="text" class="form-control" id="nickname">
+                                        <input class="form-control" id="nickname" type="text">
                                         <i class="bi bi-check-lg check-icon"></i>
                                     </div>
-                                    <button type="button" class="btn btn-duplicate" id="nicknameCheck">
+                                    <button class="btn btn-duplicate" id="nicknameCheck" type="button">
                                         <span class="btn-text">중복확인</span>
                                         <span class="btn-loading d-none">
                                                 <span class="spinner-border spinner-border-sm me-1"></span>
@@ -122,10 +122,10 @@
                             <div class="mb-3">
                                 <label class="form-label text-muted">성별</label>
                                 <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-outline-secondary gender-btn" data-gender="여자">
+                                    <button class="btn btn-outline-secondary gender-btn" data-gender="여자" type="button">
                                         여자
                                     </button>
-                                    <button type="button" class="btn btn-outline-secondary gender-btn" data-gender="남자">
+                                    <button class="btn btn-outline-secondary gender-btn" data-gender="남자" type="button">
                                         남자
                                     </button>
                                 </div>
@@ -135,17 +135,17 @@
                             <div class="row mb-3">
                                 <div class="col-4">
                                     <label class="form-label text-muted">생년월일</label>
-                                    <input type="date" class="form-control" id="birthDate">
+                                    <input class="form-control" id="birthDate" type="date">
                                 </div>
                                 <div class="col-4">
                                     <label class="form-label text-muted">키(cm)</label>
-                                    <input type="text" class="form-control number-only" id="height" placeholder="키"
-                                           maxlength="3">
+                                    <input class="form-control number-only" id="height" maxlength="3" placeholder="키"
+                                           type="text">
                                 </div>
                                 <div class="col-4">
                                     <label class="form-label text-muted">몸무게(kg)</label>
-                                    <input type="text" class="form-control number-only" id="weight" placeholder="몸무게"
-                                           maxlength="3">
+                                    <input class="form-control number-only" id="weight" maxlength="3" placeholder="몸무게"
+                                           type="text">
                                 </div>
                             </div>
 
@@ -153,13 +153,13 @@
                             <div class="mb-4">
                                 <label class="form-label text-muted">운동 유형</label>
                                 <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-outline-secondary exercise-btn" data-type="감량">
+                                    <button class="btn btn-outline-secondary exercise-btn" data-type="감량" type="button">
                                         감량
                                     </button>
-                                    <button type="button" class="btn btn-outline-secondary exercise-btn" data-type="증량">
+                                    <button class="btn btn-outline-secondary exercise-btn" data-type="증량" type="button">
                                         증량
                                     </button>
-                                    <button type="button" class="btn btn-outline-secondary exercise-btn" data-type="유지">
+                                    <button class="btn btn-outline-secondary exercise-btn" data-type="유지" type="button">
                                         유지
                                     </button>
                                 </div>
@@ -168,17 +168,17 @@
                             <!-- 이용약관 동의 -->
                             <div class="mb-4">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="agreeTerms">
+                                    <input class="form-check-input" id="agreeTerms" type="checkbox">
                                     <label class="form-check-label text-muted" for="agreeTerms">
                                         이용약관(필수)
-                                        <a href="#" class="text-primary text-decoration-none">약관보기</a>
+                                        <a class="text-primary text-decoration-none" href="#">약관보기</a>
                                     </label>
                                 </div>
                             </div>
 
                             <!-- 버튼 -->
                             <div class="d-flex justify-content-center">
-                                <button type="button" class="btn btn-primary px-5 py-3" id="submitBtn" disabled>
+                                <button class="btn btn-primary px-5 py-3" disabled id="submitBtn" type="button">
                                     <span class="btn-text">계정 등록</span>
                                     <span class="btn-loading d-none">
                                             <span class="spinner-border spinner-border-sm me-1"></span>
@@ -195,21 +195,21 @@
 </div>
 
 <!-- 알림 모달 -->
-<div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+<div aria-hidden="true" aria-labelledby="alertModalLabel" class="modal fade" id="alertModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header border-0">
                 <h5 class="modal-title" id="alertModalLabel">알림</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
             </div>
             <div class="modal-body text-center py-4">
-                <div id="alertModalIcon" class="mb-3">
+                <div class="mb-3" id="alertModalIcon">
                     <i class="bi bi-info-circle-fill text-primary" style="font-size: 3rem;"></i>
                 </div>
-                <p id="alertModalMessage" class="mb-0 fs-6"></p>
+                <p class="mb-0 fs-6" id="alertModalMessage"></p>
             </div>
             <div class="modal-footer border-0 justify-content-center">
-                <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal" id="alertModalConfirm">확인
+                <button class="btn btn-primary px-4" data-bs-dismiss="modal" id="alertModalConfirm" type="button">확인
                 </button>
             </div>
         </div>

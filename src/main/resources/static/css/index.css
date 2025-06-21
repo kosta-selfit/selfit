@@ -9,7 +9,7 @@ body {
     justify-content: center;
     padding: 2rem;
 
-    
+
 }
 
 .container {
@@ -273,12 +273,29 @@ body {
     transform: scale(1.2);
 }
 
-.person-1 { background: #ff7043; }
-.person-2 { background: #42a5f5; }
-.person-3 { background: #66bb6a; }
-.person-4 { background: #ab47bc; }
-.person-5 { background: #ffa726; }
-.person-6 { background: #26c6da; }
+.person-1 {
+    background: #ff7043;
+}
+
+.person-2 {
+    background: #42a5f5;
+}
+
+.person-3 {
+    background: #66bb6a;
+}
+
+.person-4 {
+    background: #ab47bc;
+}
+
+.person-5 {
+    background: #ffa726;
+}
+
+.person-6 {
+    background: #26c6da;
+}
 
 .chat-bubble {
     position: absolute;

@@ -3,15 +3,15 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>selfit - 건강 관리 서비스</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="/css/account/mypage-update.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/css/account/mypage-update.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script type="module" src="/js/account/mypage-update.js"></script>
+    <script src="/js/account/mypage-update.js" type="module"></script>
 
 </head>
 
@@ -34,12 +34,12 @@
                     <div class="profile-title">프로필 사진</div>
                     <div class="profile-upload-area">
                         <div class="profile-image-container">
-                            <img id="profileImg" src="/img/memberImg.png" alt="Profile Image"/>
+                            <img alt="Profile Image" id="profileImg" src="/img/memberImg.png"/>
                             <div class="camera-overlay">
                                 <i class="bi bi-camera"></i>
                             </div>
                         </div>
-                        <input type="file" id="profileImage" accept="image/*" style="display: none;">
+                        <input accept="image/*" id="profileImage" style="display: none;" type="file">
                     </div>
                 </div>
 
@@ -51,10 +51,10 @@
                             <label class="form-label">이메일</label>
                             <div class="d-flex gap-2">
                                 <div class="input-wrapper flex-grow-1">
-                                    <input type="email" class="form-control" id="email" value="" disabled>
+                                    <input class="form-control" disabled id="email" type="email" value="">
                                     <i class="bi bi-check-lg check-icon"></i>
                                 </div>
-                                <button type="button" class="btn btn-duplicate d-none" id="emailCheck">
+                                <button class="btn btn-duplicate d-none" id="emailCheck" type="button">
                                     <span class="btn-text">중복확인</span>
                                     <span class="btn-loading d-none">
                                         <span class="spinner-border spinner-border-sm me-1"></span>
@@ -69,11 +69,11 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label">성별</label>
                             <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-outline-secondary gender-btn"
-                                        data-gender="여자">여자
+                                <button class="btn btn-outline-secondary gender-btn" data-gender="여자"
+                                        type="button">여자
                                 </button>
-                                <button type="button" class="btn btn-outline-secondary gender-btn"
-                                        data-gender="남자">남자
+                                <button class="btn btn-outline-secondary gender-btn" data-gender="남자"
+                                        type="button">남자
                                 </button>
                             </div>
                         </div>
@@ -84,7 +84,7 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label">이름</label>
                             <div class="input-wrapper">
-                                <input type="text" class="form-control" id="name" value="">
+                                <input class="form-control" id="name" type="text" value="">
                                 <i class="bi bi-check-lg check-icon"></i>
                             </div>
                             <div class="invalid-feedback"></div>
@@ -96,25 +96,25 @@
                                 <!-- 생년월일 -->
                                 <div class="compact-input-group">
                                     <label class="form-label compact-label">생년월일</label>
-                                    <input type="date" class="form-control" id="birthDate">
+                                    <input class="form-control" id="birthDate" type="date">
                                     <div class="invalid-feedback"></div>
                                 </div>
 
                                 <!-- 키 -->
                                 <div class="compact-input-group">
                                     <label class="form-label compact-label">키(cm)</label>
-                                    <input type="text" class="form-control compact-input number-only" id="height"
-                                           value=""
-                                           placeholder="cm" maxlength="3">
+                                    <input class="form-control compact-input number-only" id="height" maxlength="3"
+                                           placeholder="cm"
+                                           type="text" value="">
                                     <div class="invalid-feedback"></div>
                                 </div>
 
                                 <!-- 몸무게 -->
                                 <div class="compact-input-group">
                                     <label class="form-label compact-label">몸무게(kg)</label>
-                                    <input type="text" class="form-control compact-input number-only" id="weight"
-                                           value=""
-                                           placeholder="kg" maxlength="3">
+                                    <input class="form-control compact-input number-only" id="weight" maxlength="3"
+                                           placeholder="kg"
+                                           type="text" value="">
                                     <div class="invalid-feedback"></div>
                                 </div>
                             </div>
@@ -127,10 +127,10 @@
                             <label class="form-label">닉네임</label>
                             <div class="d-flex gap-2">
                                 <div class="input-wrapper flex-grow-1">
-                                    <input type="text" class="form-control" id="nickname" value="">
+                                    <input class="form-control" id="nickname" type="text" value="">
                                     <i class="bi bi-check-lg check-icon"></i>
                                 </div>
-                                <button type="button" class="btn btn-duplicate" id="nicknameCheck">
+                                <button class="btn btn-duplicate" id="nicknameCheck" type="button">
                                     <span class="btn-text">중복확인</span>
                                     <span class="btn-loading d-none">
                                         <span class="spinner-border spinner-border-sm me-1"></span>
@@ -145,14 +145,14 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label">운동 목적</label>
                             <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-outline-secondary exercise-btn"
-                                        data-type="감량">감량
+                                <button class="btn btn-outline-secondary exercise-btn" data-type="감량"
+                                        type="button">감량
                                 </button>
-                                <button type="button" class="btn btn-outline-secondary exercise-btn"
-                                        data-type="유지">유지
+                                <button class="btn btn-outline-secondary exercise-btn" data-type="유지"
+                                        type="button">유지
                                 </button>
-                                <button type="button" class="btn btn-outline-secondary exercise-btn"
-                                        data-type="증량">증량
+                                <button class="btn btn-outline-secondary exercise-btn" data-type="증량"
+                                        type="button">증량
                                 </button>
                             </div>
                         </div>
@@ -167,7 +167,7 @@
                                 <small class="text-muted ms-2">영어 대소문자, 숫자, 특수문자 조합 8자리 이상</small>
                             </label>
                             <div class="input-wrapper">
-                                <input type="password" class="form-control" id="password" placeholder="새 비밀번호를 입력하세요">
+                                <input class="form-control" id="password" placeholder="새 비밀번호를 입력하세요" type="password">
                                 <i class="bi bi-check-lg check-icon"></i>
                             </div>
                             <div class="invalid-feedback"></div>
@@ -176,16 +176,16 @@
                         <!-- 새 비밀번호 확인 -->
                         <div class="mb-4">
                             <label class="form-label">새 비밀번호 확인</label>
-                            <input type="password" class="form-control" id="passwordConfirm"
-                                   placeholder="비밀번호를 다시 입력해주세요">
+                            <input class="form-control" id="passwordConfirm" placeholder="비밀번호를 다시 입력해주세요"
+                                   type="password">
                             <div class="invalid-feedback"></div>
                         </div>
                     </div>
 
                     <!-- 버튼 -->
                     <div class="d-flex justify-content-center gap-3">
-                        <button type="button" class="btn btn-secondary px-4" id="cancelBtn">취소</button>
-                        <button type="button" class="btn btn-primary px-4" id="saveBtn">
+                        <button class="btn btn-secondary px-4" id="cancelBtn" type="button">취소</button>
+                        <button class="btn btn-primary px-4" id="saveBtn" type="button">
                             <span class="btn-text">저장</span>
                             <span class="btn-loading d-none">
                                 <span class="spinner-border spinner-border-sm me-1"></span>
@@ -201,31 +201,31 @@
 
 
 <!-- Profile Image Upload Modal -->
-<div class="modal fade" id="profileImageModal" tabindex="-1" aria-labelledby="profileImageModalLabel"
-     aria-hidden="true">
+<div aria-hidden="true" aria-labelledby="profileImageModalLabel" class="modal fade" id="profileImageModal"
+     tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="profileImageModalLabel">프로필 이미지 업로드</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
             </div>
             <div class="modal-body">
                 <!-- Upload Area -->
-                <div id="uploadArea" class="upload-area">
+                <div class="upload-area" id="uploadArea">
                     <div class="upload-content">
                         <i class="bi bi-cloud-upload upload-icon"></i>
                         <h4>이미지를 드래그하거나 클릭하여 업로드</h4>
                         <p>JPG, PNG 파일만 지원됩니다 (최대 5MB)</p>
-                        <button type="button" class="btn btn-primary" id="selectFileBtn">파일 선택</button>
-                        <input type="file" id="imageFileInput" accept="image/*" style="display: none;">
+                        <button class="btn btn-primary" id="selectFileBtn" type="button">파일 선택</button>
+                        <input accept="image/*" id="imageFileInput" style="display: none;" type="file">
                     </div>
                 </div>
 
                 <!-- Crop Area -->
-                <div id="cropArea" class="crop-area" style="display: none;">
+                <div class="crop-area" id="cropArea" style="display: none;">
                     <div class="crop-container">
                         <div class="image-container" id="imageContainer">
-                            <img id="cropImage" src="/placeholder.svg" alt="Crop Image">
+                            <img alt="Crop Image" id="cropImage" src="/placeholder.svg">
                             <div class="crop-overlay" id="cropOverlay">
                                 <div class="crop-circle" id="cropCircle">
                                     <div class="crop-handle"></div>
@@ -245,11 +245,11 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="resetImageBtn" style="display: none;">
+                <button class="btn btn-secondary" id="resetImageBtn" style="display: none;" type="button">
                     <i class="bi bi-arrow-clockwise"></i> 다시 선택
                 </button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary" id="saveImageBtn" style="display: none;">
+                <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">취소</button>
+                <button class="btn btn-primary" id="saveImageBtn" style="display: none;" type="button">
                     <span class="btn-text">
                         <i class="bi bi-check-lg"></i> 저장
                     </span>

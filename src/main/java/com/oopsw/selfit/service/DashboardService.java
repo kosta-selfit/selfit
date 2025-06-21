@@ -29,7 +29,6 @@ public class DashboardService {
 		}
 	}
 
-
 	public int getBmr(int memberId) {
 		Member member = dashboardRepository.getBmr(memberId);
 
@@ -110,7 +109,6 @@ public class DashboardService {
 		return dashboardRepository.getCheckList(checklist);
 	}
 
-
 	public int addChecklist(Checklist checklist) {
 		int exists = dashboardRepository.isChecklist(checklist.getMemberId(), checklist.getCheckDate());
 		isAlreadyExists(exists, "체크리스트", checklist.getCheckDate());
@@ -123,7 +121,6 @@ public class DashboardService {
 		return dashboardRepository.removeChecklist(checklistId) > 0;
 	}
 
-
 	public String getGoal(int memberId) {
 		String goal = dashboardRepository.getGoal(memberId);
 		if (goal == null) {
@@ -131,7 +128,6 @@ public class DashboardService {
 		}
 		return goal;
 	}
-
 
 	public List<Map<String, Object>> getYearExerciseAvgAll(int memberId, int exerciseYear) {
 		Member member = dashboardRepository.getBmr(memberId);
@@ -163,7 +159,6 @@ public class DashboardService {
 
 		return dashboardRepository.getYearExerciseAvgAll(param);
 	}
-
 
 	public List<Map<String, Object>> getYearIntakeAvgAll(int memberId, int intakeYear) {
 		Member member = dashboardRepository.getBmr(memberId);

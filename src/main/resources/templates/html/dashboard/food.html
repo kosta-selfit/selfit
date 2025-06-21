@@ -2,12 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>selfit - 건강 관리 서비스</title>
 
     <script>window.memberId = [[${#authentication.principal.memberId}]];</script>
     <!-- CSS -->
-    <link rel="stylesheet" href="/css/dashboard/food.css"/>
+    <link href="/css/dashboard/food.css" rel="stylesheet"/>
     <!-- Bootstrap 및 아이콘 -->
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
@@ -38,9 +38,9 @@
                             </div>
                             <div class="chart-selectors">
                                 <div class="dropdown">
-                                    <button class="btn btn-outline-secondary dropdown-toggle year-selector-btn"
-                                            type="button"
-                                            data-bs-toggle="dropdown" aria-expanded="false" id="yearDropdownBtn">
+                                    <button aria-expanded="false"
+                                            class="btn btn-outline-secondary dropdown-toggle year-selector-btn"
+                                            data-bs-toggle="dropdown" id="yearDropdownBtn" type="button">
                                         <!-- 이 값은 JS에서 자동 설정됨 -->
                                     </button>
                                     <ul class="dropdown-menu" id="yearDropdownMenu">
@@ -59,31 +59,31 @@
             <div class="food-panel-wrapper">
                 <div class="calendar-panel-inner">
                     <!-- 음식 입력 패널 -->
-                    <div id="food-panel" class="card shadow-sm p-3">
+                    <div class="card shadow-sm p-3" id="food-panel">
                         <!-- 패널 닫기 버튼 -->
-                        <i class="bi bi-x-lg" id="close-panel-btn" role="button" aria-label="패널 닫기"></i>
+                        <i aria-label="패널 닫기" class="bi bi-x-lg" id="close-panel-btn" role="button"></i>
                         <!-- 선택한 날짜 출력 영역 -->
-                        <div id="panel-date" class="panel-date">2025.05.03</div>
+                        <div class="panel-date" id="panel-date">2025.05.03</div>
                         <!-- 음식 입력 영역 (이름, 먹은 양, 단위, 등록 버튼) -->
                         <div class="d-flex gap-2 align-items-center mb-3">
                             <!-- 음식명 입력 + 자동완성 -->
                             <div class="position-relative flex-grow-1">
-                                <input type="text" id="food-name" class="form-control" placeholder="음식명"
-                                       autocomplete="off">
+                                <input autocomplete="off" class="form-control" id="food-name" placeholder="음식명"
+                                       type="text">
                                 <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"
                                    role="button"></i>
-                                <ul id="autocomplete-list"
-                                    class="list-group position-absolute w-100 mt-1 shadow-sm d-none"></ul>
+                                <ul class="list-group position-absolute w-100 mt-1 shadow-sm d-none"
+                                    id="autocomplete-list"></ul>
                             </div>
                             <!-- 먹은 양 -->
-                            <input type="number" id="food-amount" class="form-control food-amount-input"
+                            <input class="form-control food-amount-input" id="food-amount" min="1"
                                    placeholder="먹은 양"
-                                   min="1"
-                                   step="1">
+                                   step="1"
+                                   type="number">
                             <!-- 단위 -->
-                            <span id="food-unit" class="unit-label">단위</span>
+                            <span class="unit-label" id="food-unit">단위</span>
                             <!-- 등록 버튼 -->
-                            <button id="add-food-btn" class="btn btn-success">등록</button>
+                            <button class="btn btn-success" id="add-food-btn">등록</button>
                         </div>
                         <!-- 리스트 헤더 영역 -->
                         <div class="food-header fw-bold text-secondary border-bottom pb-1 mb-2 small">
@@ -93,14 +93,14 @@
                             <div class="cell-action"></div>
                         </div>
                         <!-- 음식 리스트 출력 영역 -->
-                        <div id="food-list" class="d-flex flex-column gap-2 mb-3"></div>
+                        <div class="d-flex flex-column gap-2 mb-3" id="food-list"></div>
                         <!-- 총 칼로리 출력 영역 -->
                         <div class="text-end fw-bold">총 <span id="total-cal">0</span> kcal</div>
                     </div>
                 </div>
             </div>
             <!-- 식단 캘린더 영역 -->
-            <div id="calendar" class="mt-5"></div>
+            <div class="mt-5" id="calendar"></div>
             <br>
             <!-- 삭제 확인용 모달 -->
             <div class="modal fade" id="delete-modal" tabindex="-1">
@@ -108,13 +108,13 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">삭제 확인</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="닫기"></button>
+                            <button aria-label="닫기" class="btn-close" data-bs-dismiss="modal"
+                                    type="button"></button>
                         </div>
                         <div class="modal-body">이 기록을 정말 삭제하시겠습니까?</div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                            <button type="button" class="btn btn-danger" id="confirm-delete-btn">삭제</button>
+                            <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">취소</button>
+                            <button class="btn btn-danger" id="confirm-delete-btn" type="button">삭제</button>
                         </div>
                     </div>
                 </div>

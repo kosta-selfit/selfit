@@ -71,18 +71,14 @@ public class MemberRestController {
 
 	@PostMapping("/check-email")
 	public ResponseEntity<Map<String, Boolean>> checkEmail(@RequestBody String jsonData) {
-		String email = gson.fromJson(jsonData, JsonObject.class)
-			.get("email")
-			.getAsString();
+		String email = gson.fromJson(jsonData, JsonObject.class).get("email").getAsString();
 
 		return ResponseEntity.ok(Map.of("result", memberService.isEmailExists(email)));
 	}
 
 	@PostMapping("/check-nickname")
 	public ResponseEntity<Map<String, Boolean>> checkNickname(@RequestBody String jsonData) {
-		String nickname = gson.fromJson(jsonData, JsonObject.class)
-			.get("nickname")
-			.getAsString();
+		String nickname = gson.fromJson(jsonData, JsonObject.class).get("nickname").getAsString();
 
 		return ResponseEntity.ok(Map.of("result", memberService.isNicknameExists(nickname)));
 	}
@@ -90,9 +86,7 @@ public class MemberRestController {
 	@PostMapping("/member/check-pw")
 	public ResponseEntity<Map<String, Boolean>> checkPw(@AuthenticationPrincipal AuthenticatedUser loginUser,
 		@RequestBody String jsonData) {
-		String pw = gson.fromJson(jsonData, JsonObject.class)
-			.get("pw")
-			.getAsString();
+		String pw = gson.fromJson(jsonData, JsonObject.class).get("pw").getAsString();
 		return ResponseEntity.ok(Map.of("success", memberService.checkPw(loginUser.getMemberId(), pw)));
 	}
 
@@ -113,17 +107,13 @@ public class MemberRestController {
 
 		if (member.getMemberType().equals("DEFAULT")) {
 			UserDetails userDetails = customUserDetailsService.loadUserByUsername(member.getEmail());
-			authentication = new UsernamePasswordAuthenticationToken(
-				userDetails, null, userDetails.getAuthorities()
-			);
+			authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
 		} else {
 			Map<String, Object> attributes = Map.of("email", member.getEmail());
 			CustomOAuth2User oAuth2User = customOAuth2UserService.convertToCustomOAuth2User(attributes);
 
-			authentication = new UsernamePasswordAuthenticationToken(
-				oAuth2User, null, oAuth2User.getAuthorities()
-			);
+			authentication = new UsernamePasswordAuthenticationToken(oAuth2User, null, oAuth2User.getAuthorities());
 
 		}
 

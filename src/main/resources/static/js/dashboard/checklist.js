@@ -38,7 +38,7 @@ async function loadChecklistBetween(startDate, endDate) {
         }
 
         promises.push(
-            axios.post('/api/dashboard/checklist/items', { memberId, checkDate: dateStr })
+            axios.post('/api/dashboard/checklist/items', {memberId, checkDate: dateStr})
                 .then(res => {
                     checklistData[dateStr] = res.data.map(item => ({
                         checkId: item.checkId,
@@ -156,7 +156,7 @@ document.getElementById('close-panel-btn').addEventListener('click', async () =>
     if (checklistList.length === 0 && currentChecklistId) {
         try {
             await axios.delete('/api/dashboard/checklist', {
-                data: { checklistId: currentChecklistId }  // ✅ 객체로 감싸서 보냄
+                data: {checklistId: currentChecklistId}  // ✅ 객체로 감싸서 보냄
             });
 
             // 프론트에서 데이터 제거

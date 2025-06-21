@@ -51,32 +51,32 @@ $(document).ready(function () {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         })
-        .then(function (response) {
-            // 잠시 후 대시보드로 이동
-            setTimeout(function () {
-                window.location.href = '/dashboard';
-            }, 500);
-        })
-        .catch(function (error) {
-            console.error('로그인 실패:', error);
-            let errorMessage = '로그인에 실패했습니다.';
+            .then(function (response) {
+                // 잠시 후 대시보드로 이동
+                setTimeout(function () {
+                    window.location.href = '/dashboard';
+                }, 500);
+            })
+            .catch(function (error) {
+                console.error('로그인 실패:', error);
+                let errorMessage = '로그인에 실패했습니다.';
 
-            if (error.response) {
-                if (error.response.data && error.response.data.message) {
-                    errorMessage = error.response.data.message;
-                } else if (error.response.status === 401) {
-                    errorMessage = '아이디 또는 비밀번호가 올바르지 않습니다.';
-                } else if (error.response.status === 500) {
-                    errorMessage = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+                if (error.response) {
+                    if (error.response.data && error.response.data.message) {
+                        errorMessage = error.response.data.message;
+                    } else if (error.response.status === 401) {
+                        errorMessage = '아이디 또는 비밀번호가 올바르지 않습니다.';
+                    } else if (error.response.status === 500) {
+                        errorMessage = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+                    }
                 }
-            }
 
-            showAlert(errorMessage, 'error');
-        })
-        .finally(function () {
-            // 로딩 상태 해제
-            $loginBtn.prop('disabled', false).text(originalText);
-        });
+                showAlert(errorMessage, 'error');
+            })
+            .finally(function () {
+                // 로딩 상태 해제
+                $loginBtn.prop('disabled', false).text(originalText);
+            });
     }
 
     // 알림 메시지 표시 함수

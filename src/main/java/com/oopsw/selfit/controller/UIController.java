@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpSession;
 public class UIController {
 
 	//account
-	@GetMapping("/account/login")
+	@GetMapping("/account/login")/**/
 	public String login() {
 		return "account/login";
 	}

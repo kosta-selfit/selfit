@@ -164,42 +164,42 @@ async function renderLineChart(year) {
             },
         },
         series: [
-            { name: "섭취", data: intakeData },
-            { name: "기초대사량 + 운동", data: burnData },
+            {name: "섭취", data: intakeData},
+            {name: "기초대사량 + 운동", data: burnData},
         ],
         legend: {
             show: true,
             position: "top",
             horizontalAlign: "right",
-            markers: { width: 10, height: 10, radius: 12 },
-            itemMargin: { horizontal: 10, vertical: 0 },
+            markers: {width: 10, height: 10, radius: 12},
+            itemMargin: {horizontal: 10, vertical: 0},
         },
         xaxis: {
             type: "datetime",
             labels: {
                 format: "MM-dd",
-                style: { fontSize: "12px", colors: "#444" },
+                style: {fontSize: "12px", colors: "#444"},
             },
         },
         yaxis: {
             title: {
                 text: "kcal",
-                style: { fontSize: "14px", color: "#999" },
+                style: {fontSize: "14px", color: "#999"},
             },
             labels: {
-                style: { fontSize: "12px", colors: "#666" },
+                style: {fontSize: "12px", colors: "#666"},
             },
         },
         colors: ["#33C181", "#11C6CF"],
-        stroke: { width: 3, curve: "smooth" },
+        stroke: {width: 3, curve: "smooth"},
         tooltip: {
-            x: { format: "yyyy-MM-dd" },
-            y: { formatter: (val) => val + " kcal" },
+            x: {format: "yyyy-MM-dd"},
+            y: {formatter: (val) => val + " kcal"},
         },
         title: {
             text: "칼로리 그래프",
             align: "left",
-            style: { fontSize: "18px", color: "#666" },
+            style: {fontSize: "18px", color: "#666"},
         },
     };
 
@@ -283,8 +283,8 @@ async function setupCalendar() {
         initialView: "dayGridMonth",
         locale: "ko",
         height: 650,
-        headerToolbar: { left: "prev,next today", center: "title", right: "" },
-        buttonText: { today: "오늘" },
+        headerToolbar: {left: "prev,next today", center: "title", right: ""},
+        buttonText: {today: "오늘"},
         events: intakeEvents,
 
         // 7) 날짜 클릭해서 패널 열기 로직

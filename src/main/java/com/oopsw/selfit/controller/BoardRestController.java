@@ -35,10 +35,8 @@ public class BoardRestController {
 	private final CommentService commentService;
 
 	@GetMapping("/list")
-	public ResponseEntity<List<Board>> getBoards(@RequestParam int page,
-		@RequestParam int categoryId,
-		@RequestParam(defaultValue = "") String keyword,
-		@RequestParam(defaultValue = "recent") String sortOrder) {
+	public ResponseEntity<List<Board>> getBoards(@RequestParam int page, @RequestParam int categoryId,
+		@RequestParam(defaultValue = "") String keyword, @RequestParam(defaultValue = "recent") String sortOrder) {
 
 		log.info("getBoards - page: {}, categoryId: {}, keyword: {}, sortOrder: {}", page, categoryId, keyword,
 			sortOrder);
@@ -58,9 +56,7 @@ public class BoardRestController {
 		}
 
 		log.info("getBoard - loginUser: {}", currentUserId);
-		Board board = Board.builder()
-			.boardId(boardId)
-			.build();
+		Board board = Board.builder().boardId(boardId).build();
 		Board result = boardService.getBoard(board);
 		log.info("getBoard - result: {}", result);
 
@@ -72,8 +68,7 @@ public class BoardRestController {
 	}
 
 	@GetMapping("/comments")
-	public ResponseEntity<List<Comment>> getComments(
-		@RequestParam("boardId") int boardId,
+	public ResponseEntity<List<Comment>> getComments(@RequestParam("boardId") int boardId,
 		@RequestParam(name = "page", defaultValue = "1") int page) {
 		List<Comment> comments = commentService.getComments(boardId, page);
 		return ResponseEntity.ok(comments);
@@ -98,15 +93,11 @@ public class BoardRestController {
 	}
 
 	@DeleteMapping("/delete/{boardId}")
-	public ResponseEntity<String> deleteBoard(
-		@AuthenticationPrincipal AuthenticatedUser loginUser,
+	public ResponseEntity<String> deleteBoard(@AuthenticationPrincipal AuthenticatedUser loginUser,
 		@PathVariable int boardId) {
 
 		// 요청 DTO에 boardId와 memberId(작성자 ID)를 세팅
-		Board toDelete = Board.builder()
-			.boardId(boardId)
-			.memberId(loginUser.getMemberId())
-			.build();
+		Board toDelete = Board.builder().boardId(boardId).memberId(loginUser.getMemberId()).build();
 
 		// 서비스 호출만, 실패 시 예외가 던져짐
 		boardService.removeBoard(toDelete);
@@ -116,10 +107,8 @@ public class BoardRestController {
 	}
 
 	@PutMapping("/edit/{boardId}")
-	public ResponseEntity<String> setBoard(
-		@AuthenticationPrincipal AuthenticatedUser loginUser,
-		@PathVariable int boardId,
-		@RequestBody Board board) {
+	public ResponseEntity<String> setBoard(@AuthenticationPrincipal AuthenticatedUser loginUser,
+		@PathVariable int boardId, @RequestBody Board board) {
 
 		board.setBoardId(boardId);
 		board.setMemberId(loginUser.getMemberId());
@@ -130,17 +119,13 @@ public class BoardRestController {
 	}
 
 	@PostMapping("/bookmark/{boardId}")
-	public ResponseEntity<Boolean> toggleBookmark(
-		@AuthenticationPrincipal AuthenticatedUser loginUser,
-		@PathVariable("boardId") int boardId
-	) {
+	public ResponseEntity<Boolean> toggleBookmark(@AuthenticationPrincipal AuthenticatedUser loginUser,
+		@PathVariable("boardId") int boardId) {
 		if (loginUser == null) {
 			return ResponseEntity.status(401).build();
 		}
 
-		Board board = Board.builder()
-			.boardId(boardId)
-			.memberId(loginUser.getMemberId())  // ← 반드시 추가
+		Board board = Board.builder().boardId(boardId).memberId(loginUser.getMemberId())  // ← 반드시 추가
 			.build();
 
 		boolean nowBookmarked = boardService.toggleBookmark(board);

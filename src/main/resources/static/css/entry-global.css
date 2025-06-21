@@ -65,12 +65,12 @@ html, body {
     width: 500px;
     height: 300px;
     background: radial-gradient(
-        circle,
-        color-mix(in srgb, var(--color-1-20), transparent) 0%,
-        color-mix(in srgb, var(--color-2-20), transparent) 30%,
-        color-mix(in srgb, var(--color-2-10), transparent) 60%,
-        color-mix(in srgb, var(--color-1-10), transparent) 80%,
-        transparent 100%
+            circle,
+            color-mix(in srgb, var(--color-1-20), transparent) 0%,
+            color-mix(in srgb, var(--color-2-20), transparent) 30%,
+            color-mix(in srgb, var(--color-2-10), transparent) 60%,
+            color-mix(in srgb, var(--color-1-10), transparent) 80%,
+            transparent 100%
     );
     border-radius: 50%;
     z-index: 2;
@@ -84,12 +84,12 @@ html, body {
     width: 500px;
     height: 300px;
     background: radial-gradient(
-        circle,
-        color-mix(in srgb, var(--color-1-20), transparent) 0%,
-        color-mix(in srgb, var(--color-2-20), transparent) 30%,
-        color-mix(in srgb, var(--color-2-10), transparent) 60%,
-        color-mix(in srgb, var(--color-1-10), transparent) 80%,
-        transparent 100%
+            circle,
+            color-mix(in srgb, var(--color-1-20), transparent) 0%,
+            color-mix(in srgb, var(--color-2-20), transparent) 30%,
+            color-mix(in srgb, var(--color-2-10), transparent) 60%,
+            color-mix(in srgb, var(--color-1-10), transparent) 80%,
+            transparent 100%
     );
     border-radius: 50%;
     z-index: 2;

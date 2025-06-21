@@ -61,7 +61,7 @@ const listEl = document.getElementById('autocomplete-list');
     }
 
     function fetchYearlyKcal(year) {
-        return axios.post('/api/dashboard/exercise/kcal/year', { exerciseYear: year })
+        return axios.post('/api/dashboard/exercise/kcal/year', {exerciseYear: year})
             .then(res => {
                 const rawList = res.data || [];
                 return rawList.map(item => ({
@@ -102,7 +102,7 @@ const listEl = document.getElementById('autocomplete-list');
                 type: 'line',
                 height: 350,
                 background: '#f9f9f9',
-                zoom: { enabled: true, type: 'x', autoScaleYaxis: true },
+                zoom: {enabled: true, type: 'x', autoScaleYaxis: true},
                 toolbar: {
                     show: true,
                     tools: {
@@ -116,25 +116,25 @@ const listEl = document.getElementById('autocomplete-list');
                     }
                 }
             },
-            series: [{ name: '운동 칼로리', data: seriesData }],
+            series: [{name: '운동 칼로리', data: seriesData}],
             xaxis: {
                 type: 'datetime',
                 min: xMin,
                 max: xMax,
-                labels: { format: 'MM-dd', style: { fontSize: '12px', colors: '#444' } },
+                labels: {format: 'MM-dd', style: {fontSize: '12px', colors: '#444'}},
                 tickPlacement: 'on'
             },
             yaxis: {
                 max: yAxisMax,
-                title: { text: 'kcal', style: { fontSize: '14px', color: '#999' } },
-                labels: { style: { fontSize: '12px', colors: '#666' } }
+                title: {text: 'kcal', style: {fontSize: '14px', color: '#999'}},
+                labels: {style: {fontSize: '12px', colors: '#666'}}
             },
-            tooltip: { x: { format: 'yyyy-MM-dd' } },
-            stroke: { width: 3, curve: 'smooth', colors: ['#33C181'] },
-            fill: { type: 'solid', colors: ['#33C181'] },
-            markers: { size: 0, hover: { size: 6 } },
-            grid: { borderColor: '#eee', strokeDashArray: 4 },
-            title: { text: '운동 그래프', align: 'left', style: { fontSize: '18px', color: '#666' } }
+            tooltip: {x: {format: 'yyyy-MM-dd'}},
+            stroke: {width: 3, curve: 'smooth', colors: ['#33C181']},
+            fill: {type: 'solid', colors: ['#33C181']},
+            markers: {size: 0, hover: {size: 6}},
+            grid: {borderColor: '#eee', strokeDashArray: 4},
+            title: {text: '운동 그래프', align: 'left', style: {fontSize: '18px', color: '#666'}}
         };
 
         if (window.exerciseChartInstance) {
@@ -169,7 +169,7 @@ const listEl = document.getElementById('autocomplete-list');
             }, 100);
         });
 
-        chart.addEventListener("zoomed", function (_ctx, { xaxis }) {
+        chart.addEventListener("zoomed", function (_ctx, {xaxis}) {
             const min = Math.max(xaxis.min, xMin);
             const max = Math.min(xaxis.max, xMax);
             if (min !== xaxis.min || max !== xaxis.max) {
@@ -190,12 +190,12 @@ document.addEventListener('DOMContentLoaded', function () {
         initialView: 'dayGridMonth',
         locale: 'ko',
         height: 650,
-        headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
-        buttonText: { today: '오늘' },
+        headerToolbar: {left: 'prev,next today', center: 'title', right: ''},
+        buttonText: {today: '오늘'},
 
         // 이벤트 소스: 월 단위 조회
         eventSources: [
-            function(fetchInfo, successCallback, failureCallback) {
+            function (fetchInfo, successCallback, failureCallback) {
                 const startDate = new Date(fetchInfo.start);
                 const endDate = new Date(fetchInfo.end);
                 const requests = [];
@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 while (cursor < endDate) {
                     const dateStr = cursor.toISOString().split('T')[0];
                     const req = axios
-                        .post('/api/dashboard/exercise/kcal', { exerciseDate: dateStr })
+                        .post('/api/dashboard/exercise/kcal', {exerciseDate: dateStr})
                         .then(res => {
                             const sumKcal = res.data.exerciseSum || 0;
                             if (sumKcal <= 0) {
@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function () {
         ],
 
         // 날짜 클릭 시
-        dateClick: async function(info) {
+        dateClick: async function (info) {
             selectedDate = info.dateStr;
 
             // UI 초기화 & 패널 열기
@@ -618,7 +618,7 @@ document.getElementById('confirm-delete-btn').addEventListener('click', async fu
     if (itemToDelete === null) return;
     const item = exerciseList[itemToDelete];
     try {
-        await axios.delete('/api/dashboard/exercise', { data: { exerciseInfoId: item.id } });
+        await axios.delete('/api/dashboard/exercise', {data: {exerciseInfoId: item.id}});
 
         // (1) 로컬 배열에서 제거
         exerciseList.splice(itemToDelete, 1);

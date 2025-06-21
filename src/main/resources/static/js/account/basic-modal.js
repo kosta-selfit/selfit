@@ -15,21 +15,21 @@ function showAlertModal(message, redirectPath = null, triggerOnClose = false) {
 
 
     const redirect = () => {
-            if (redirectPath) {
-                window.location.href = redirectPath;
-            }
-        };
-
         if (redirectPath) {
-            $("#successModalConfirm").on("click", () => {
-                modal.hide();
-                redirect();
-            });
-
-            if (triggerOnClose) {
-                $modal.on("hidden.bs.modal", redirect);
-            }
+            window.location.href = redirectPath;
         }
+    };
+
+    if (redirectPath) {
+        $("#successModalConfirm").on("click", () => {
+            modal.hide();
+            redirect();
+        });
+
+        if (triggerOnClose) {
+            $modal.on("hidden.bs.modal", redirect);
+        }
+    }
 
     modal.show();
 }
@@ -84,20 +84,20 @@ function showErrorModal(message, redirectPath = null, triggerOnClose = false) {
     $modal.off("hidden.bs.modal");
 
     const redirect = () => {
-            if (redirectPath) {
-                window.location.href = redirectPath;
-            }
-        };
+        if (redirectPath) {
+            window.location.href = redirectPath;
+        }
+    };
 
     if (redirectPath) {
-       $("#successModalConfirm").on("click", () => {
-               modal.hide();
-               redirect();
-           });
-           if (triggerOnClose) {
-               $modal.on("hidden.bs.modal", redirect);
-           }
-       }
+        $("#successModalConfirm").on("click", () => {
+            modal.hide();
+            redirect();
+        });
+        if (triggerOnClose) {
+            $modal.on("hidden.bs.modal", redirect);
+        }
+    }
 
     modal.show();
 }
@@ -133,7 +133,7 @@ function showConfirmModal(message, onConfirm) {
 }
 
 
-export { showAlertModal, showSuccessModal, showErrorModal, showConfirmModal };
+export {showAlertModal, showSuccessModal, showErrorModal, showConfirmModal};
 
 // 모달 HTML 동적 삽입
 (function insertModals() {
