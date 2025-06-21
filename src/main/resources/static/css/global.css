@@ -234,6 +234,10 @@ html, body {
     font-size: 16px;
 }
 
+.sideBar .submenu-item.active {
+    background-color: var(--color-4-20);
+}
+
 .sideBar .submenu-item:hover {
     background-color: var(--color-4-20);
 }

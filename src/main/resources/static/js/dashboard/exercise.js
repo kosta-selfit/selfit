@@ -10,20 +10,19 @@ axios.defaults.withCredentials = true;
 // 전역 변수 선언
 // -----------------------------
 let calendar;
-let selectedDate               = null;
-let exerciseNoteId             = null;       // 클릭된 날짜의 ExerciseNote ID
-let exerciseMap                = {};         // { "YYYY-MM-DD": [ { id, name, amount, cal }, … ] }
-let exerciseList               = [];         // 현재 패널에 보여줄, 선택된 날짜의 운동 목록
-let editIndex                  = null;       // 편집 중인 인덱스
-let itemToDelete               = null;       // 삭제 대기 중인 인덱스
-let selectedMet                = 0;          // 자동완성에서 선택된 운동의 분당 kcal
-let selectedName               = "";         // 자동완성에서 선택된 운동명
+let selectedDate = null;
+let exerciseNoteId = null;       // 클릭된 날짜의 ExerciseNote ID
+let exerciseMap = {};            // { "YYYY-MM-DD": [ { id, name, amount, cal }, … ] }
+let exerciseList = [];           // 현재 패널에 보여줄, 선택된 날짜의 운동 목록
+let editIndex = null;            // 편집 중인 인덱스
+let itemToDelete = null;         // 삭제 대기 중인 인덱스
+let selectedMet = 0;             // 자동완성에서 선택된 운동의 분당 kcal
+let selectedName = "";           // 자동완성에서 선택된 운동명
 
 // DOM 요소 참조
-const nameInput   = document.getElementById('exercise-name');
+const nameInput = document.getElementById('exercise-name');
 const amountInput = document.getElementById('exercise-duration');
-const listEl      = document.getElementById('autocomplete-list');
-
+const listEl = document.getElementById('autocomplete-list');
 
 // =======================================
 // 1) ApexCharts를 이용한 “운동 그래프” 초기화
@@ -31,9 +30,9 @@ const listEl      = document.getElementById('autocomplete-list');
 (function () {
     function setupYearDropdown() {
         const currentYear = new Date().getFullYear();
-        const startYear   = currentYear - 2;
+        const startYear = currentYear - 2;
         const dropdownBtn = document.getElementById('yearDropdownBtn');
-        const menu        = document.getElementById('yearDropdownMenu');
+        const menu = document.getElementById('yearDropdownMenu');
 
         dropdownBtn.innerText = `${currentYear}년`;
 
@@ -62,9 +61,7 @@ const listEl      = document.getElementById('autocomplete-list');
     }
 
     function fetchYearlyKcal(year) {
-        return axios.post('/api/dashboard/exercise/kcal/year', {
-            exerciseYear: year
-        })
+        return axios.post('/api/dashboard/exercise/kcal/year', { exerciseYear: year })
             .then(res => {
                 const rawList = res.data || [];
                 return rawList.map(item => ({
@@ -89,15 +86,15 @@ const listEl      = document.getElementById('autocomplete-list');
     });
 
     function renderChart(seriesData, selectedYear) {
-        const today   = new Date();
-        const jan1    = new Date(selectedYear, 0, 1).getTime();
-        const dec31   = new Date(selectedYear, 11, 31).getTime();
+        const today = new Date();
+        const jan1 = new Date(selectedYear, 0, 1).getTime();
+        const dec31 = new Date(selectedYear, 11, 31).getTime();
         const todayTime = today.getTime();
 
         const xMin = jan1;
         const xMax = (selectedYear === today.getFullYear() ? todayTime : dec31);
 
-        const yMax     = Math.max(...seriesData.map(d => d.y), 0);
+        const yMax = Math.max(...seriesData.map(d => d.y), 0);
         const yAxisMax = yMax <= 4000 ? 4000 : Math.ceil(yMax / 500) * 500;
 
         const options = {
@@ -182,7 +179,6 @@ const listEl      = document.getElementById('autocomplete-list');
     }
 })();
 
-
 // =======================================
 // 2) FullCalendar + 패널 연동
 // =======================================
@@ -201,9 +197,9 @@ document.addEventListener('DOMContentLoaded', function () {
         eventSources: [
             function(fetchInfo, successCallback, failureCallback) {
                 const startDate = new Date(fetchInfo.start);
-                const endDate   = new Date(fetchInfo.end);
-                const requests  = [];
-                let cursor      = new Date(startDate);
+                const endDate = new Date(fetchInfo.end);
+                const requests = [];
+                let cursor = new Date(startDate);
 
                 while (cursor < endDate) {
                     const dateStr = cursor.toISOString().split('T')[0];
@@ -243,11 +239,11 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('add-exercise-btn').innerText = '등록';
             editIndex = null;
             nameInput.disabled = false;
-            nameInput.value   = '';
+            nameInput.value = '';
             amountInput.value = '';
             listEl.classList.add('d-none');
-            selectedName  = "";
-            selectedMet   = 0;
+            selectedName = "";
+            selectedMet = 0;
 
             // 노트 생성/조회
             try {
@@ -268,10 +264,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
                 const serverList = res2.data || [];
                 exerciseList = serverList.map(item => ({
-                    id:     item.exerciseInfoId,
-                    name:   item.exerciseName,
+                    id: item.exerciseInfoId,
+                    name: item.exerciseName,
                     amount: `${item.exerciseMin}분`,
-                    cal:    item.exerciseKcal
+                    cal: item.exerciseKcal
                 }));
                 exerciseMap[selectedDate] = exerciseList;
                 totalForClickedDay = exerciseList.reduce((sum, it) => sum + it.cal, 0);
@@ -308,13 +304,13 @@ document.addEventListener('DOMContentLoaded', function () {
     calendar.render();
 });
 
-
 // ===========================================
-// 3) 자동완성(Autocomplete) 기능
+// 3) 자동완성(Autocomplete) 기능 수정
+//    → food.js 방식과 동일하게 'click' 이벤트만 사용
 // ===========================================
 let selectedIdx = -1;
 
-nameInput.addEventListener('input', async function () {
+nameInput.addEventListener('input', async function (e) {
     const keyword = nameInput.value.trim();
     if (!keyword) {
         listEl.classList.add('d-none');
@@ -323,8 +319,8 @@ nameInput.addEventListener('input', async function () {
 
     try {
         const res = await axios.post('/api/dashboard/exercise/openSearch', {
-            keyword:   keyword,
-            pageNo:    1,
+            keyword: keyword,
+            pageNo: 1,
             numOfRows: 100
         });
         const items = res.data || []; // 예: [ { "단위체중당에너지소비량":4.5, "운동명":"걷기" }, … ]
@@ -335,7 +331,7 @@ nameInput.addEventListener('input', async function () {
         }
 
         listEl.innerHTML = items.map(e => {
-            const metValue  = parseFloat(e["단위체중당에너지소비량"] || 0);
+            const metValue = parseFloat(e["단위체중당에너지소비량"] || 0);
             const nameValue = e["운동명"] || "";
             return `
                 <li class="autocomplete-item"
@@ -348,23 +344,10 @@ nameInput.addEventListener('input', async function () {
                 </li>`;
         }).join('');
         listEl.classList.remove('d-none');
-    } catch (e) {
-        console.error("운동 자동완성 OpenSearch 호출 실패:", e);
+    } catch (err) {
+        console.error("운동 자동완성 OpenSearch 호출 실패:", err);
         listEl.classList.add('d-none');
     }
-});
-
-listEl.addEventListener('click', function (e) {
-    const clickedLi = e.target.closest('.autocomplete-item');
-    if (!clickedLi) return;
-
-    selectedName               = clickedLi.dataset.name || "";
-    selectedMet                = parseFloat(clickedLi.dataset.met) || 0;
-    nameInput.value            = selectedName;
-    amountInput.value          = "";
-    nameInput.dataset.calPerUnit = selectedMet;
-    listEl.classList.add('d-none');
-    selectedIdx = -1;
 });
 
 nameInput.addEventListener('keydown', function (e) {
@@ -392,18 +375,44 @@ function updateAutocompleteSelection(items) {
     });
 }
 
+// ★ 'click' 핸들러에서 선택 즉시 input을 비활성화하도록 추가
+listEl.addEventListener('click', function (e) {
+    const clickedLi = e.target.closest('.autocomplete-item');
+    if (!clickedLi) return;
+
+    // 전파 중단 (예: 밖에서 닫히지 않도록)
+    e.stopPropagation();
+
+    // 1) 선택된 데이터를 각각 변수에 담아둔다
+    selectedName = clickedLi.dataset.name || "";
+    selectedMet = parseFloat(clickedLi.dataset.met) || 0;
+
+    // 2) input 필드에 값 세팅
+    nameInput.value = selectedName;
+    // 운동량 입력란은 초기화만 해두면 됩니다. (운동 분 단위는 사용자가 직접 입력)
+    amountInput.value = "";
+    // 메트 데이터를 dataset에 저장해두면 나중 등록 시 사용 가능
+    nameInput.dataset.calPerUnit = selectedMet;
+
+    // 3) 자동완성 목록을 숨긴다
+    listEl.classList.add('d-none');
+    selectedIdx = -1;
+
+    // ★ 4) 선택 직후, 운동명 입력(input)을 비활성화
+    //    이제 사용자는 input을 수정할 수 없습니다.
+    nameInput.disabled = true;
+});
 
 // ===========================================
 // 4) “등록/수정” 버튼 클릭 시 서버 호출
 // ===========================================
 document.getElementById('add-exercise-btn').addEventListener('click', async function () {
-    const 운동명   = nameInput.value.trim();
-    const 분량     = parseInt(amountInput.value, 10);
+    const 운동명 = nameInput.value.trim();
+    const 분량 = parseInt(amountInput.value, 10);
     const 분당메트 = parseFloat(nameInput.dataset.calPerUnit) || 0;
 
-    // 1) “수정 모드”인 경우, 공통 유효성 검사 중 met 체크를 건너뛴다
+    // ──── 1) “수정 모드”인 경우 ───────────────────────────────────────────────────────────────────
     if (editIndex !== null) {
-        // 운동명/분량은 여전히 체크
         if (!운동명) {
             alert("운동명을 입력해주세요.");
             return;
@@ -418,31 +427,29 @@ document.getElementById('add-exercise-btn').addEventListener('click', async func
         }
 
         // — 수정 모드 로직 —
-        const item = exerciseList[editIndex];
         try {
-            // PUT 요청: 서버에 exerciseInfoId와 newMin만 보내면, met은 서버에서 자체 조회한다
+            const item = exerciseList[editIndex];
             const putRes = await axios.put('/api/dashboard/exercise', {
                 exerciseInfoId: item.id,
-                newMin:         분량
+                newMin: 분량
             });
 
             if (putRes.data.success) {
-                // 수정 성공 시, 해당 날짜 전체 목록을 다시 받아와서 화면에 덮어쓰기
+                // (1) 서버에서 전체 목록 재조회
                 const listRes = await axios.post('/api/dashboard/exercises', {
                     exerciseDate: selectedDate
                 });
                 const serverList = listRes.data || [];
-
                 exerciseList = serverList.map(e => ({
-                    id:     e.exerciseInfoId,
-                    name:   e.exerciseName,
+                    id: e.exerciseInfoId,
+                    name: e.exerciseName,
                     amount: `${e.exerciseMin}분`,
-                    cal:    e.exerciseKcal
+                    cal: e.exerciseKcal
                 }));
                 exerciseMap[selectedDate] = exerciseList;
                 renderExerciseList();
 
-                // 달력 이벤트 업데이트
+                // (2) 달력 이벤트 업데이트
                 const updatedTotal = exerciseList.reduce((sum, it) => sum + it.cal, 0);
                 const existingEvents = calendar.getEvents().filter(ev => ev.startStr === selectedDate);
                 if (updatedTotal > 0) {
@@ -458,20 +465,19 @@ document.getElementById('add-exercise-btn').addEventListener('click', async func
             alert("운동 정보 수정에 실패했습니다. 다시 시도해주세요.");
         }
 
-        // 수정 모드 해제 & UI 초기화
+        // ── 수정 모드 해제 및 UI 초기화 ─────────────────────────────────────────────────────────────
         editIndex = null;
         document.getElementById('add-exercise-btn').innerText = '등록';
         document.querySelectorAll('.exercise-row').forEach(row => row.classList.remove('editing'));
-        nameInput.disabled = false;
+        nameInput.disabled = false;    // ← 수정 후 반드시 활성화
 
-        // 여기서 return하지 않고, 아래 초기화 코드만 수행한 뒤 함수 종료
-        nameInput.value   = "";
+        nameInput.value = "";
         amountInput.value = "";
         delete nameInput.dataset.calPerUnit;
         return;
     }
 
-    // 2) “수정 모드가 아닐 때(신규 등록)”에만, 자동완성 메트 체크 수행
+    // ──── 2) 신규 등록 모드 ────────────────────────────────────────────────────────────────────
     if (!운동명) {
         alert("운동명을 입력해주세요.\n(자동완성에서 운동을 선택하세요.)");
         return;
@@ -492,31 +498,30 @@ document.getElementById('add-exercise-btn').addEventListener('click', async func
     // — 신규 등록 모드 로직 —
     const requestBody = {
         exerciseNoteId: exerciseNoteId,
-        exerciseName:   운동명,
-        exerciseMin:    분량,
-        met:            분당메트
+        exerciseName: 운동명,
+        exerciseMin: 분량,
+        met: 분당메트
     };
 
     try {
         const postRes = await axios.post('/api/dashboard/exercise', requestBody);
 
         if (postRes.data.success) {
-            // 저장 성공 시 → 전체 목록 재조회
+            // (1) 저장 성공 시 서버에서 전체 목록 재조회
             const listRes = await axios.post('/api/dashboard/exercises', {
                 exerciseDate: selectedDate
             });
             const serverList = listRes.data || [];
-
             exerciseList = serverList.map(e => ({
-                id:     e.exerciseInfoId,
-                name:   e.exerciseName,
+                id: e.exerciseInfoId,
+                name: e.exerciseName,
                 amount: `${e.exerciseMin}분`,
-                cal:    e.exerciseKcal
+                cal: e.exerciseKcal
             }));
             exerciseMap[selectedDate] = exerciseList;
             renderExerciseList();
 
-            // 달력 이벤트 업데이트
+            // (2) 달력 이벤트 업데이트
             const updatedTotal = exerciseList.reduce((sum, it) => sum + it.cal, 0);
             const existingEvents = calendar.getEvents().filter(ev => ev.startStr === selectedDate);
             if (updatedTotal > 0) {
@@ -540,15 +545,16 @@ document.getElementById('add-exercise-btn').addEventListener('click', async func
         alert("네트워크 오류가 발생했습니다. 다시 시도해주세요.");
     }
 
+    // ── 신규 등록 후 반드시 nameInput 활성화 ────────────────────────────────────────────────────
+    nameInput.disabled = false;    // ← 여기를 빼먹지 말아야 합니다.
+
     // 입력 폼 초기화
-    nameInput.value   = "";
+    nameInput.value = "";
     amountInput.value = "";
     delete nameInput.dataset.calPerUnit;
-    selectedName      = "";
-    selectedMet       = 0;
+    selectedName = "";
+    selectedMet = 0;
 });
-
-
 
 // ===========================================
 // 5) 운동 목록 렌더링 함수
@@ -563,20 +569,19 @@ function renderExerciseList() {
         const rowClass = idx % 2 === 0 ? 'exercise-row-even' : 'exercise-row-odd';
 
         listContainer.innerHTML += `
-          <div class="exercise-row ${rowClass}">
-            <div class="cell-name fw-semibold">${item.name}</div>
-            <div class="cell-amount">${item.amount}</div>
-            <div class="cell-kcal">${item.cal}kcal</div>
-            <div class="cell-action">
-              <i class="bi bi-pencil-square text-black fs-5" role="button" data-idx="${idx}"></i>
-              <i class="bi bi-x-square text-black fs-5" role="button" data-idx="${idx}"></i>
-            </div>
-          </div>`;
+      <div class="exercise-row ${rowClass}">
+        <div class="cell-name fw-semibold">${item.name}</div>
+        <div class="cell-amount">${item.amount}</div>
+        <div class="cell-kcal">${item.cal}kcal</div>
+        <div class="cell-action">
+          <i class="bi bi-pencil-square text-black fs-5" role="button" data-idx="${idx}"></i>
+          <i class="bi bi-x-square text-black fs-5" role="button" data-idx="${idx}"></i>
+        </div>
+      </div>`;
     });
 
     document.getElementById('total-cal').innerText = total;
 }
-
 
 // ===========================================
 // 6) 리스트 아이콘(수정/삭제) 클릭 처리
@@ -587,10 +592,9 @@ document.getElementById('exercise-list').addEventListener('click', function (e) 
     // “수정” 아이콘 클릭
     if (e.target.classList.contains('bi-pencil-square')) {
         const item = exerciseList[idx];
-        nameInput.value   = item.name;
+        nameInput.value = item.name;
         amountInput.value = parseInt(item.amount, 10);
-        // 수정 모드 진입 시, dataset.calPerUnit은 기존에는 계산해서 넣었으나
-        // 이제 서버에서 한 번 불러왔으므로, item.cal / item.amount 로 복구 가능
+        // 수정 모드 진입: 이전에 저장된 kcal/분당 메트로 복원
         nameInput.dataset.calPerUnit = parseFloat(item.cal) / parseInt(item.amount, 10) || 0;
         editIndex = idx;
         document.getElementById('add-exercise-btn').innerText = '수정';
@@ -606,7 +610,6 @@ document.getElementById('exercise-list').addEventListener('click', function (e) 
         modal.show();
     }
 });
-
 
 // ===========================================
 // 7) 삭제 확인 버튼 클릭 시 → 서버 호출
@@ -640,21 +643,22 @@ document.getElementById('confirm-delete-btn').addEventListener('click', async fu
     itemToDelete = null;
 });
 
-
 // ===========================================
 // 8) 패널 닫기 (버튼 및 외부 클릭 시 닫기)
 // ===========================================
-document.getElementById('close-panel-btn').addEventListener('click', function () {
+document.getElementById('close-panel-btn').addEventListener('click', function (e) {
+    e.stopPropagation(); // 자동완성/다른 클릭과 충돌 방지
     const panel = document.getElementById('exercise-panel');
     if (panel) panel.style.display = 'none';
 });
 document.addEventListener('click', function (e) {
     const panel = document.getElementById('exercise-panel');
     if (!panel) return;
+    // 패널 내부, 달력 날짜, 모달 클릭 시에는 닫지 않음
     if (
-        panel.contains(e.target)
-        || e.target.closest('.fc-daygrid-day')
-        || e.target.closest('.modal')
+        panel.contains(e.target) ||
+        e.target.closest('.fc-daygrid-day') ||
+        e.target.closest('.modal')
     ) return;
     panel.style.display = 'none';
 });

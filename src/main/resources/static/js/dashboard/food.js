@@ -419,11 +419,16 @@ listEl.addEventListener('click', function (e) {
     const amountVal = parseInt(amountStr.replace(/[^0-9]/g, ''), 10);
     const unitText  = amountStr.replace(/[0-9]/g, '');
 
+    // 1) 입력 값 세팅
     nameInput.value = name;
     amountInput.value = amountVal;
     unitEl.innerText = unitText;
     nameInput.dataset.calPerUnit = calPerUnit; // 1단위(100g)당 칼로리
 
+    // 2) 선택 직후 입력창 잠그기
+    nameInput.disabled = true;
+
+    // 3) 자동완성 목록 숨기기
     listEl.classList.add('d-none');
     selectedIdx = -1;
 });

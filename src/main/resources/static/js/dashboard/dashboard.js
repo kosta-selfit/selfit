@@ -55,6 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 { intakeDate: dateStr },
                 { headers: JSON_HEADERS }
             );
+            // 백엔드에서 { intakeSum: number } 형태로 응답한다고 가정
             return response.data.intakeSum ?? 0;
         } catch (err) {
             throw new Error("오늘 섭취 합계 조회 실패");
@@ -68,6 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 { exerciseDate: dateStr },
                 { headers: JSON_HEADERS }
             );
+            // 백엔드에서 { exerciseSum: number } 형태로 응답한다고 가정
             return response.data.exerciseSum ?? 0;
         } catch (err) {
             throw new Error("오늘 운동 합계 조회 실패");
@@ -335,6 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 { intakeYear: parseInt(year) },
                 { headers: JSON_HEADERS }
             );
+            // 백엔드에서 [{ intakeDate: "YYYY-MM-DD", intakeSum: number }, …] 형태로 응답한다고 가정
             return response.data;
         } catch (err) {
             throw new Error("나의 섭취 합계 조회 실패");
@@ -348,6 +351,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 { intakeYear: parseInt(year) },
                 { headers: JSON_HEADERS }
             );
+            // 백엔드에서 [{ intakeDate: "YYYY-MM-DD", avgIntakeKcal: number }, …] 형태로 응답한다고 가정
             return response.data;
         } catch (err) {
             throw new Error("평균 섭취 합계 조회 실패");
@@ -361,6 +365,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 { exerciseYear: parseInt(year) },
                 { headers: JSON_HEADERS }
             );
+            // 백엔드에서 [{ exerciseDate: "YYYY-MM-DD", exerciseSum: number }, …] 형태로 응답한다고 가정
             return response.data;
         } catch (err) {
             throw new Error("나의 운동 합계 조회 실패");
@@ -374,6 +379,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 { exerciseYear: parseInt(year) },
                 { headers: JSON_HEADERS }
             );
+            // 백엔드에서 [{ EXERCISE_DATE: "YYYY-MM-DD", avgKcal: number }, …] 형태로 응답한다고 가정
             return response.data;
         } catch (err) {
             throw new Error("평균 운동 합계 조회 실패");
@@ -399,35 +405,47 @@ document.addEventListener("DOMContentLoaded", () => {
                 avgList = [];
             }
 
-            // 2) 두 리스트를 날짜별로 합쳐서 맵 형태로 만든 뒤, x축 카테고리 순으로 뽑아낸다.
-            //    Map key = "YYYY-MM-DD", value = { my: ###, avg: ### }
+            // 2) JSON 필드 이름에 맞춰 매핑
+            //    - myList: [{ intakeDate, intakeSum }, …]
+            //    - avgList: [{ intakeDate, avgIntakeKcal }, …]
             const mapByDate = {};
+
             myList.forEach((item) => {
-                mapByDate[item.intakeDate] = {
-                    my: item.intakeTotal ?? 0,
+                // item.intakeDate, item.intakeSum 사용
+                const dateKey = item.intakeDate;
+                if (!dateKey) return;
+                mapByDate[dateKey] = {
+                    my: item.intakeSum ?? 0,
                     avg: 0
                 };
             });
+
             avgList.forEach((item) => {
-                if (!mapByDate[item.intakeDate]) {
-                    mapByDate[item.intakeDate] = { my: 0, avg: 0 };
+                const dateKey = item.intakeDate;
+                if (!dateKey) return;
+                if (!mapByDate[dateKey]) {
+                    mapByDate[dateKey] = { my: 0, avg: 0 };
                 }
-                mapByDate[item.intakeDate].avg = item.avgIntakeKcal ?? 0;
+                mapByDate[dateKey].avg = item.avgIntakeKcal ?? 0;
             });
 
-            // 3) mapByDate의 키(날짜)들 정렬
-            const sortedDates = Object.keys(mapByDate).sort((a, b) => new Date(a) - new Date(b));
+            // 3) 날짜 순 정렬
+            const sortedDates = Object.keys(mapByDate).sort(
+                (a, b) => new Date(a) - new Date(b)
+            );
 
             // 4) 정렬된 날짜 순서대로 myData, avgData, categories 채우기
             sortedDates.forEach((dateStr) => {
                 const { my, avg } = mapByDate[dateStr];
                 myData.push(my);
                 avgData.push(avg);
+
                 const dt = new Date(dateStr);
                 const mm = String(dt.getMonth() + 1).padStart(2, "0");
                 const dd = String(dt.getDate()).padStart(2, "0");
                 categories.push(`${mm}-${dd}`);
             });
+
         } else {
             // “운동” 분기
             let [myList, avgList] = [[], []];
@@ -442,26 +460,41 @@ document.addEventListener("DOMContentLoaded", () => {
                 avgList = [];
             }
 
+            // JSON 필드 이름에 맞춰 매핑
+            // - myList: [{ exerciseDate, exerciseSum }, …]
+            // - avgList: [{ EXERCISE_DATE, avgKcal }, …]
             const mapByDate = {};
+
             myList.forEach((item) => {
-                mapByDate[item.exerciseDate] = {
+                const dateKey = item.exerciseDate;
+                if (!dateKey) return;
+                mapByDate[dateKey] = {
                     my: item.exerciseSum ?? 0,
                     avg: 0
                 };
             });
+
             avgList.forEach((item) => {
-                const dtKey = item.EXERCISE_DATE;
-                if (!mapByDate[dtKey]) {
-                    mapByDate[dtKey] = { my: 0, avg: 0 };
+                // NOTE: avgList 배열의 키: EXERCISE_DATE
+                const dateKey = item.EXERCISE_DATE;
+                if (!dateKey) return;
+
+                if (!mapByDate[dateKey]) {
+                    mapByDate[dateKey] = { my: 0, avg: 0 };
                 }
-                mapByDate[dtKey].avg = item.avgKcal ?? 0;
+                mapByDate[dateKey].avg = item.avgKcal ?? 0;
             });
 
-            const sortedDates = Object.keys(mapByDate).sort((a, b) => new Date(a) - new Date(b));
+            // 날짜 순 정렬
+            const sortedDates = Object.keys(mapByDate).sort(
+                (a, b) => new Date(a) - new Date(b)
+            );
+
             sortedDates.forEach((dateStr) => {
                 const { my, avg } = mapByDate[dateStr];
                 myData.push(my);
                 avgData.push(avg);
+
                 const dt = new Date(dateStr);
                 const mm = String(dt.getMonth() + 1).padStart(2, "0");
                 const dd = String(dt.getDate()).padStart(2, "0");
@@ -494,8 +527,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 min: 0,
                 max: 4000,
                 tickAmount: 5,
-                labels: { formatter: (val) => val, style: { fontSize: "12px", colors: "#6b7280" } },
-                title: { text: "kcal", rotate: -90, style: { fontSize: "14px", color: "#6b7280", fontWeight: 500 } }
+                labels: {
+                    formatter: (val) => val,
+                    style: { fontSize: "12px", colors: "#6b7280" }
+                },
+                title: {
+                    text: "kcal",
+                    rotate: -90,
+                    style: { fontSize: "14px", color: "#6b7280", fontWeight: 500 }
+                }
             },
             title: {
                 text: `기록 비교 - ${compareType} (${year})`,
@@ -547,7 +587,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const compareSelector = document.querySelector(".compare-selector");
         const yearSelector = document.querySelector(".year-selector");
         const compareType = compareSelector.value; // "섭취" or "운동"
-        const year = yearSelector.value; // "2025년" 등
+        const year = yearSelector.value; // "2025" 등
 
         if (lineChart) lineChart.destroy();
 
@@ -615,7 +655,6 @@ document.addEventListener("DOMContentLoaded", () => {
             // 별도 로직 없음, 개별 체크박스에 붙은 이벤트 내부에서 처리
         }
     });
-
 
     // ------------------------------
     // 15) 체크리스트 조회 함수 (오늘 날짜 기준, Axios 사용)
